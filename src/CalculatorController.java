@@ -29,8 +29,8 @@ public class CalculatorController {
             double b = Double.parseDouble(bValue.getText());
             double c = Double.parseDouble(cValue.getText());
 
-            answer1.setText(QuadraticSolver.getSolutions(a, b, c)[0]);
-            answer2.setText(QuadraticSolver.getSolutions(a, b, c)[1]);
+            answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
+            answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
         } catch(NumberFormatException e){
             alert("Enter only numbers");
         } catch(ArithmeticException e){
