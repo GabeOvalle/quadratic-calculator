@@ -4,5 +4,5 @@
 - User can input coefficients a, b, and c in a quadratic equation.
 - Users can input integers and decimals.
 - The two solutions are outputted to the user in decimal form.
-- Complex solutions are outputted in the format ai$\pm$b, still using decimals.
+- Complex solutions are outputted in the format a$\pm$ib, still using decimals.
 - The user will get an error message if a non-number is entered.
