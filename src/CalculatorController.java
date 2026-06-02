@@ -29,20 +29,8 @@ public class CalculatorController {
             double b = Double.parseDouble(bValue.getText());
             double c = Double.parseDouble(cValue.getText());
 
-            double discriminant = (b*b) - 4*a*c;
-
-            if(discriminant < 0){
-                double firstPart = (0 - b) / (2*a);
-                double complexNumerator = Math.sqrt(0 - discriminant);
-                String secondPart = "i" + String.format("%.3f", complexNumerator) + "/" + 2*a;
-                answer1.setText(firstPart + " + " + secondPart);
-                answer2.setText(firstPart + " - " + secondPart);
-            } else{
-                double ans1 = ((0 - b) + Math.sqrt(discriminant)) / (2*a);
-                double ans2 = ((0 - b) - Math.sqrt(discriminant)) / (2*a);
-                answer1.setText(String.format("%.3f", ans1));
-                answer2.setText(String.format("%.3f", ans2));
-            }
+            answer1.setText(QuadraticSolver.getSolutions(a, b, c)[0]);
+            answer2.setText(QuadraticSolver.getSolutions(a, b, c)[1]);
         } catch(NumberFormatException e){
             alert("Enter only numbers");
         } catch(ArithmeticException e){
