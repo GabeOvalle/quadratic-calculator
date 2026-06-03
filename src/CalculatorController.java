@@ -25,14 +25,14 @@ public class CalculatorController {
     @FXML
     private void handleCalculate(){
         try{
-            double a = Double.parseDouble(aValue.getText());
-            double b = Double.parseDouble(bValue.getText());
-            double c = Double.parseDouble(cValue.getText());
+            double a = Fraction.getFraction(aValue.getText()).doubleValue();
+            double b = Fraction.getFraction(bValue.getText()).doubleValue();
+            double c = Fraction.getFraction(cValue.getText()).doubleValue();
 
             answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
             answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
         } catch(NumberFormatException e){
-            alert("Enter only numbers");
+            alert("Enter only numbers or fractions");
         } catch(ArithmeticException e){
             alert("Your equation isn't quadratic");
         }
