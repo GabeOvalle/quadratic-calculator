@@ -2,44 +2,65 @@ public class QuadraticSolver {
 
     public record QuadraticRoots(String root1, String root2) {}
 
-    public static QuadraticRoots getSolutions(double a, double b, double c) throws ArithmeticException {
+    public static QuadraticRoots getSolutions(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
-        if(a == 0) {
+        if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
         }
 
-        double discriminant = (b*b) - 4*a*c;
+        QuadraticRoots roots;
 
-        if(discriminant < 0){
-            String firstPart = formatAnswer((0 - b) / (2*a));
+        Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
 
-            double complexNumerator = Math.sqrt(0 - discriminant);
-            String secondPart = "";
-            try {
-                if(complexNumerator / (2*a) != 1.0) {
-                    secondPart = Fraction.getFraction(complexNumerator / (2*a)).toString();
-                }
-            } catch (ArithmeticException e) {
-                secondPart = "sqrt(" + (0-discriminant) + ")/" + (2*a);
+        if(discriminant.doubleValue() < 0.0) {
+            if(isPerfectSquare(discriminant.abs())) {
+                String root1 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " + i"
+                        + formatAnswer(Math.sqrt(discriminant.abs().doubleValue()) / 2*a.doubleValue());
+                String root2 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " - i"
+                        + formatAnswer(Math.sqrt(discriminant.abs().doubleValue()) / 2*a.doubleValue());
+                roots = new QuadraticRoots(root1, root2);
+            } else {
+                String root1 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " + iSqrt("
+                        + discriminant.abs() + ")/" + 2*a.doubleValue();
+                String root2 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " - iSqrt("
+                        + discriminant.abs() + ")/" + 2*a.doubleValue();
+                roots = new QuadraticRoots(root1, root2);
             }
-            return new QuadraticRoots(firstPart + " + i" + secondPart, firstPart + " - i" + secondPart);
         } else {
-            double ans1 = ((0 - b) + Math.sqrt(discriminant)) / (2*a);
-            double ans2 = ((0 - b) - Math.sqrt(discriminant)) / (2*a);
-            return new QuadraticRoots(formatAnswer(ans1), formatAnswer(ans2));
+            if(isPerfectSquare(discriminant)) {
+                double root1 = (b.negate().doubleValue() + Math.sqrt(discriminant.doubleValue())) / 2*a.doubleValue();
+                double root2 = (b.negate().doubleValue() - Math.sqrt(discriminant.doubleValue())) / 2*a.doubleValue();
+                roots = new QuadraticRoots(formatAnswer(root1), formatAnswer(root2));
+            } else {
+                String root1 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " + Sqrt("
+                        + discriminant + ")/" + 2*a.doubleValue();
+                String root2 = formatAnswer(b.negate().doubleValue() / 2*a.doubleValue()) + " - Sqrt("
+                        + discriminant + ")/" + 2*a.doubleValue();
+                roots = new QuadraticRoots(root1, root2);
+            }
         }
 
+        return roots;
     }
 
     private static String formatAnswer(double answer) {
         try {
             Fraction fraction = Fraction.getFraction(answer);
-            if(fraction.getDenominator() == 1) {
-                return String.valueOf(fraction.getNumerator());
-            }
             return fraction.toString();
         } catch(ArithmeticException e) {
             return String.format("%.3f", answer);
         }
+    }
+
+    private static boolean isPerfectSquare(Fraction fraction) {
+        if(fraction.doubleValue() < 0.0) {
+            return false;
+        }
+
+        int numerator = (int) Math.sqrt(fraction.getNumerator());
+        int denominator = (int) Math.sqrt(fraction.getDenominator());
+
+        return (numerator*numerator == fraction.getNumerator())
+                && (denominator*denominator == fraction.getDenominator());
     }
 }

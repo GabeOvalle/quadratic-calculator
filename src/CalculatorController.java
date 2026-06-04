@@ -25,9 +25,9 @@ public class CalculatorController {
     @FXML
     private void handleCalculate(){
         try{
-            double a = Fraction.getFraction(aValue.getText()).doubleValue();
-            double b = Fraction.getFraction(bValue.getText()).doubleValue();
-            double c = Fraction.getFraction(cValue.getText()).doubleValue();
+            Fraction a = Fraction.getFraction(aValue.getText());
+            Fraction b = Fraction.getFraction(bValue.getText());
+            Fraction c = Fraction.getFraction(cValue.getText());
 
             answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
             answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
