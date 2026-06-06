@@ -21,7 +21,7 @@
                 <Insets top="5.0"/>
             </HBox.margin>
         </TextField>
-        <Label alignment="CENTER" prefHeight="47.0" prefWidth="49.0" text="x^2 +">
+        <Label alignment="CENTER" prefHeight="47.0" prefWidth="49.0" text="x&#xb2; +">
             <font>
                 <Font size="15.0"/>
             </font>
