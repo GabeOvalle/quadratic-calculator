@@ -62,8 +62,8 @@ public class TestSuite {
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(7, 1)
             );
-            Assertions.assertEquals("-3 + √8/2.0", answers.root1());
-            Assertions.assertEquals("-3 - √8/2.0", answers.root2());
+            Assertions.assertEquals("-3 + √8/2.0; ≈-1.5858", answers.root1());
+            Assertions.assertEquals("-3 - √8/2.0; ≈-4.4142", answers.root2());
         }
 
         @Test

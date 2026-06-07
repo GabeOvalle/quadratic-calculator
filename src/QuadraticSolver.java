@@ -44,7 +44,13 @@ public class QuadraticSolver {
                         + discriminant + "/" + 2*a.doubleValue();
                 String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - √"
                         + discriminant + "/" + 2*a.doubleValue();
-                roots = new QuadraticRoots(root1, root2);
+
+                double approxRoot1 = ((0 - b.doubleValue()) + Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
+                double approxRoot2 = ((0 - b.doubleValue()) - Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
+                roots = new QuadraticRoots(
+                        root1 + "; ≈" + String.format("%.4f", approxRoot1),
+                        root2 + "; ≈" + String.format("%.4f", approxRoot2)
+                );
             }
         }
 
