@@ -44,14 +44,30 @@ public class QuadraticSolver {
                         + discriminant + "/" + 2*a.doubleValue();
                 String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - √"
                         + discriminant + "/" + 2*a.doubleValue();
-
-                double approxRoot1 = ((0 - b.doubleValue()) + Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
-                double approxRoot2 = ((0 - b.doubleValue()) - Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
-                roots = new QuadraticRoots(
-                        root1 + "; ≈" + String.format("%.4f", approxRoot1),
-                        root2 + "; ≈" + String.format("%.4f", approxRoot2)
-                );
+                roots = new QuadraticRoots(root1, root2);
             }
+        }
+
+        return roots;
+    }
+
+    public static QuadraticRoots getDecimalApproximations(Fraction a, Fraction b, Fraction c) {
+
+        if(a.doubleValue() == 0.0) {
+            throw new ArithmeticException();
+        }
+
+        QuadraticRoots roots;
+
+        Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
+
+        if(discriminant.doubleValue() < 0.0) {
+            roots = new QuadraticRoots("", "");
+        } else {
+            double root1 = (b.negate().doubleValue() + Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
+            double root2 = (b.negate().doubleValue() - Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
+
+            roots = new QuadraticRoots(formatDecimalApproximation(root1), formatDecimalApproximation(root2));
         }
 
         return roots;
@@ -64,6 +80,20 @@ public class QuadraticSolver {
         } catch(ArithmeticException e) {
             return String.format("%.3f", answer);
         }
+    }
+
+    private static String formatDecimalApproximation(double approx) {
+        String formattedApprox = "";
+
+        if(Math.floor(approx) != approx) {
+            if(String.valueOf(approx).length() > String.format("%.4f", approx).length()) {
+                formattedApprox = "; ≈" + String.format("%.4f", approx);
+            } else {
+                formattedApprox = "; " + approx;
+            }
+        }
+
+        return formattedApprox;
     }
 
     private static boolean isPerfectSquare(Fraction fraction) {

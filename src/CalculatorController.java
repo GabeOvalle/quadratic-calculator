@@ -38,8 +38,14 @@ public class CalculatorController {
             Fraction b = Fraction.getFraction(bValue.getText());
             Fraction c = Fraction.getFraction(cValue.getText());
 
-            answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
-            answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
+            answer1.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root1()
+                            + QuadraticSolver.getDecimalApproximations(a, b, c).root1()
+            );
+            answer2.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root2()
+                            + QuadraticSolver.getDecimalApproximations(a, b, c).root2()
+            );
         } catch(NumberFormatException e){
             alert("Enter only whole numbers, fractions, or decimals", "");
         } catch(ArithmeticException e){
