@@ -24,10 +24,10 @@ public class QuadraticSolver {
                         + formatAnswer((Math.sqrt(discriminant.abs().doubleValue())) / (2*a.doubleValue()));
                 roots = new QuadraticRoots(root1, root2);
             } else {
-                String root1 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " + i√"
-                        + discriminant.abs() + "/" + 2*a.doubleValue();
-                String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - i√"
-                        + discriminant.abs() + "/" + 2*a.doubleValue();
+                String root1 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " + i"
+                        + simplifyRadicalFraction(discriminant.abs(), Fraction.getFraction(2, 1).multiplyBy(a));
+                String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - i"
+                        + simplifyRadicalFraction(discriminant.abs(), Fraction.getFraction(2, 1).multiplyBy(a));
                 roots = new QuadraticRoots(root1, root2);
             }
         } else {
@@ -40,10 +40,10 @@ public class QuadraticSolver {
                         .divideBy(Fraction.getFraction(2).multiplyBy(a));
                 roots = new QuadraticRoots(root1.toString(), root2.toString());
             } else {
-                String root1 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " + √"
-                        + discriminant + "/" + 2*a.doubleValue();
-                String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - √"
-                        + discriminant + "/" + 2*a.doubleValue();
+                String root1 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " + "
+                        + simplifyRadicalFraction(discriminant, Fraction.getFraction(2, 1).multiplyBy(a));
+                String root2 = formatAnswer((b.negate().doubleValue()) / (2*a.doubleValue())) + " - "
+                        + simplifyRadicalFraction(discriminant, Fraction.getFraction(2, 1).multiplyBy(a));
                 roots = new QuadraticRoots(root1, root2);
             }
         }
@@ -51,7 +51,7 @@ public class QuadraticSolver {
         return roots;
     }
 
-    public static QuadraticRoots getDecimalApproximations(Fraction a, Fraction b, Fraction c) {
+    public static QuadraticRoots getDecimalApproximations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
@@ -74,6 +74,10 @@ public class QuadraticSolver {
     }
 
     private static String formatAnswer(double answer) {
+        if(answer == 0.0) {
+            return "";
+        }
+
         try {
             Fraction fraction = Fraction.getFraction(answer);
             return fraction.toString();
@@ -94,6 +98,66 @@ public class QuadraticSolver {
         }
 
         return formattedApprox;
+    }
+
+    private static String simplifyRadicalFraction(Fraction radicand, Fraction denominator) {
+        if(radicand.getDenominator() > 1) {
+            return "√(" + radicand + ")/(" + denominator + ")";
+        }
+        if(denominator.getDenominator() > 1) {
+            return simplifyRadicalFraction(radicand, Fraction.ONE) + "/(" + denominator + ")";
+        }
+
+        int radicandInt = radicand.getNumerator();
+        int denominatorInt = denominator.getNumerator();
+
+        int largestSquareFactor = 1;
+
+        for (int i = 1; i * i <= radicandInt; i++) {
+            int square = i * i;
+            if (radicandInt % square == 0) {
+                largestSquareFactor = square;
+            }
+        }
+
+        int outside = (int) Math.sqrt(largestSquareFactor);
+        int inside = radicandInt / largestSquareFactor;
+
+        int numerator = outside;
+
+        int gcd = gcd(numerator, denominatorInt);
+        numerator /= gcd;
+        denominatorInt /= gcd;
+
+        if (inside == 1) {
+            return denominatorInt == 1
+                    ? String.valueOf(numerator)
+                    : numerator + "/" + denominator;
+        }
+
+        String radicalPart = inside == 1
+                ? ""
+                : "√(" + inside + ")";
+
+        if (numerator == 1) {
+            return denominatorInt == 1
+                    ? radicalPart
+                    : radicalPart + "/" + denominator;
+        }
+
+        if (denominatorInt == 1) {
+            return numerator + radicalPart;
+        }
+
+        return numerator + radicalPart + "/" + denominator;
+    }
+    private static int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return Math.abs(a);
     }
 
     private static boolean isPerfectSquare(Fraction fraction) {
