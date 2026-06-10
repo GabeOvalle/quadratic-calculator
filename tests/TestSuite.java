@@ -73,13 +73,21 @@ public class TestSuite {
         @Test
         @DisplayName("Correctly solves equations with irrational solutions")
         void shouldCalculateCorrectSolutions_whenEquationHasIrrationalSolutions() {
-            QuadraticSolver.QuadraticRoots answers = QuadraticSolver.getSolutions(
+            QuadraticSolver.QuadraticRoots answers1 = QuadraticSolver.getSolutions(
                     Fraction.getFraction(1, 1),
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(7, 1)
             );
-            Assertions.assertEquals("-3 + √(2)", answers.root1());
-            Assertions.assertEquals("-3 - √(2)", answers.root2());
+            Assertions.assertEquals("-3 + √(2)", answers1.root1());
+            Assertions.assertEquals("-3 - √(2)", answers1.root2());
+
+            QuadraticSolver.QuadraticRoots answers2 = QuadraticSolver.getSolutions(
+                    Fraction.getFraction(2, 18),
+                    Fraction.getFraction(5, 2),
+                    Fraction.getFraction(2, 1)
+            );
+            Assertions.assertEquals("-45/4 + 9√(193/36)/2", answers2.root1());
+            Assertions.assertEquals("-45/4 - 9√(193/36)/2", answers2.root2());
         }
 
         @Test

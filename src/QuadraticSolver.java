@@ -101,63 +101,52 @@ public class QuadraticSolver {
     }
 
     private static String simplifyRadicalFraction(Fraction radicand, Fraction denominator) {
-        if(radicand.getDenominator() > 1) {
-            return "√(" + radicand + ")/(" + denominator + ")";
-        }
-        if(denominator.getDenominator() > 1) {
-            return simplifyRadicalFraction(radicand, Fraction.ONE) + "/(" + denominator + ")";
-        }
 
-        int radicandInt = radicand.getNumerator();
-        int denominatorInt = denominator.getNumerator();
+        if(radicand.getDenominator() > 1) {
+            String firstPart = denominator.getDenominator() == 1 ? "" : String.valueOf(denominator.getDenominator());
+            String secondPart = denominator.getNumerator() == 1 ? "" : "/" + denominator.getNumerator();
+            return firstPart + "√(" + radicand + ")" + secondPart;
+        }
 
         int largestSquareFactor = 1;
 
-        for (int i = 1; i * i <= radicandInt; i++) {
+        for (int i = 1; i * i <= radicand.getNumerator(); i++) {
             int square = i * i;
-            if (radicandInt % square == 0) {
+
+            if (radicand.getNumerator() % square == 0) {
                 largestSquareFactor = square;
             }
         }
 
         int outside = (int) Math.sqrt(largestSquareFactor);
-        int inside = radicandInt / largestSquareFactor;
+        int inside = radicand.getNumerator() / largestSquareFactor;
 
-        int numerator = outside;
+        Fraction coefficient =
+                Fraction.getFraction(outside)
+                        .divideBy(denominator)
+                        .reduce();
 
-        int gcd = gcd(numerator, denominatorInt);
-        numerator /= gcd;
-        denominatorInt /= gcd;
+        String firstPart = coefficient.getNumerator() == 1 ? "" : String.valueOf(coefficient.getNumerator());
+        String secondPart = coefficient.getDenominator() == 1 ? "" : "/" + coefficient.getDenominator();
+
+        String radical =
+                (inside == 1)
+                        ? ""
+                        : "√(" + inside + ")";
 
         if (inside == 1) {
-            return denominatorInt == 1
-                    ? String.valueOf(numerator)
-                    : numerator + "/" + denominator;
+            return coefficient.toString();
         }
 
-        String radicalPart = inside == 1
-                ? ""
-                : "√(" + inside + ")";
-
-        if (numerator == 1) {
-            return denominatorInt == 1
-                    ? radicalPart
-                    : radicalPart + "/" + denominator;
+        if (coefficient.equals(Fraction.getFraction(1))) {
+            return radical;
         }
 
-        if (denominatorInt == 1) {
-            return numerator + radicalPart;
+        if (coefficient.equals(Fraction.getFraction(-1))) {
+            return "-" + radical;
         }
 
-        return numerator + radicalPart + "/" + denominator;
-    }
-    private static int gcd(int a, int b) {
-        while (b != 0) {
-            int temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return Math.abs(a);
+        return firstPart + radical + secondPart;
     }
 
     private static boolean isPerfectSquare(Fraction fraction) {
