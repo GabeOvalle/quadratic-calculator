@@ -2,6 +2,8 @@ public class QuadraticSolver {
 
     public record QuadraticRoots(String root1, String root2) {}
 
+    public record DecimalApproximations(Double root1, Double root2) {}
+
     public static QuadraticRoots getSolutions(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
@@ -51,23 +53,22 @@ public class QuadraticSolver {
         return roots;
     }
 
-    public static QuadraticRoots getDecimalApproximations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
+    public static DecimalApproximations getDecimalApproximations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
         }
 
-        QuadraticRoots roots;
+        DecimalApproximations roots;
 
         Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
 
         if(discriminant.doubleValue() < 0.0) {
-            roots = new QuadraticRoots("", "");
+            roots = new DecimalApproximations(null, null);
         } else {
             double root1 = (b.negate().doubleValue() + Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
             double root2 = (b.negate().doubleValue() - Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
-
-            roots = new QuadraticRoots(formatDecimalApproximation(root1), formatDecimalApproximation(root2));
+            roots = new DecimalApproximations(root1, root2);
         }
 
         return roots;
@@ -86,19 +87,6 @@ public class QuadraticSolver {
         }
     }
 
-    private static String formatDecimalApproximation(double approx) {
-        String formattedApprox = "";
-
-        if(Math.floor(approx) != approx) {
-            if(String.valueOf(approx).length() > String.format("%.4f", approx).length()) {
-                formattedApprox = "; ≈" + String.format("%.4f", approx);
-            } else {
-                formattedApprox = "; " + approx;
-            }
-        }
-
-        return formattedApprox;
-    }
 
     private static String simplifyRadicalFraction(Fraction radicand, Fraction denominator) {
 

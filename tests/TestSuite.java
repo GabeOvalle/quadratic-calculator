@@ -107,45 +107,37 @@ public class TestSuite {
         @Test
         @DisplayName("Correctly approximates rational solutions")
         void shouldCalculateCorrectApproximations_whenEquationHasRationalSolutions() {
-            QuadraticSolver.QuadraticRoots answers = QuadraticSolver.getDecimalApproximations(
+            QuadraticSolver.DecimalApproximations answers = QuadraticSolver.getDecimalApproximations(
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(-13,1),
                     Fraction.getFraction(6, 1)
             );
-            Assertions.assertEquals("; 1.5", answers.root1());
-            Assertions.assertEquals("; ≈0.6667", answers.root2());
+            Assertions.assertEquals(1.5, answers.root1(), 0.0001);
+            Assertions.assertEquals(0.66666666, answers.root2(), 0.0001);
         }
 
         @Test
         @DisplayName("Correctly approximates irrational solutions")
         void shouldCalculateCorrectApproximations_whenEquationHasIrrationalSolutions() {
-            QuadraticSolver.QuadraticRoots answers = QuadraticSolver.getDecimalApproximations(
+            QuadraticSolver.DecimalApproximations answers = QuadraticSolver.getDecimalApproximations(
                     Fraction.getFraction(1, 1),
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(7, 1)
             );
-            Assertions.assertEquals("; ≈-1.5858", answers.root1());
-            Assertions.assertEquals("; ≈-4.4142", answers.root2());
+            Assertions.assertEquals(-1.5858, answers.root1(),0.0001);
+            Assertions.assertEquals(-4.4142, answers.root2(), 0.0001);
         }
 
         @Test
-        @DisplayName("Returns empty strings if solutions are whole numbers or complex")
-        void shouldReturnEmptyString_whenEquationHasWholeOrComplexRoots() {
-            QuadraticSolver.QuadraticRoots answers1 = QuadraticSolver.getDecimalApproximations(
-                    Fraction.getFraction(1, 1),
-                    Fraction.getFraction(-10, 1),
-                    Fraction.getFraction(25, 1)
-            );
-            Assertions.assertEquals("", answers1.root1());
-            Assertions.assertEquals("", answers1.root2());
-
-            QuadraticSolver.QuadraticRoots answers2 = QuadraticSolver.getDecimalApproximations(
+        @DisplayName("Returns empty strings if solutions are complex")
+        void shouldReturnEmptyString_whenEquationHasComplexRoots() {
+            QuadraticSolver.DecimalApproximations answers2 = QuadraticSolver.getDecimalApproximations(
                     Fraction.getFraction(1, 1),
                     Fraction.getFraction(4, 1),
                     Fraction.getFraction(5, 1)
             );
-            Assertions.assertEquals("", answers2.root1());
-            Assertions.assertEquals("", answers2.root2());
+            Assertions.assertNull(answers2.root1());
+            Assertions.assertNull(answers2.root2());
         }
     }
 }
