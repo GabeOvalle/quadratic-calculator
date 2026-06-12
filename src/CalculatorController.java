@@ -24,24 +24,40 @@ public class CalculatorController {
 
     @FXML
     private void handleCalculate(){
+        if(aValue.getText().isEmpty()) {
+            aValue.setText("0");
+        }
+        if(bValue.getText().isEmpty()) {
+            bValue.setText("0");
+        }
+        if(cValue.getText().isEmpty()) {
+            cValue.setText("0");
+        }
         try{
-            double a = Double.parseDouble(aValue.getText());
-            double b = Double.parseDouble(bValue.getText());
-            double c = Double.parseDouble(cValue.getText());
+            Fraction a = Fraction.getFraction(aValue.getText());
+            Fraction b = Fraction.getFraction(bValue.getText());
+            Fraction c = Fraction.getFraction(cValue.getText());
 
-            answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
-            answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
+            answer1.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root1()
+                            + QuadraticSolver.getDecimalApproximations(a, b, c).root1()
+            );
+            answer2.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root2()
+                            + QuadraticSolver.getDecimalApproximations(a, b, c).root2()
+            );
         } catch(NumberFormatException e){
-            alert("Enter only numbers");
+            alert("Enter only whole numbers, fractions, or decimals", "");
         } catch(ArithmeticException e){
-            alert("Your equation isn't quadratic");
+            alert("Your equation isn't quadratic", "This equation appears to be linear");
         }
     }
 
-    private static void alert(String headerText){
+    private static void alert(String headerText, String contentText){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
         alert.show();
     }
 }

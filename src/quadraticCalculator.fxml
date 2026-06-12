@@ -8,72 +8,63 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="206.0"
-      prefWidth="366.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="CalculatorController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="206.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CalculatorController">
     <HBox alignment="CENTER" prefHeight="47.0" prefWidth="366.0">
         <VBox.margin>
-            <Insets top="10.0"/>
+            <Insets top="10.0" />
         </VBox.margin>
-        <TextField fx:id="aValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate"
-                   prefHeight="40.0" prefWidth="40.0">
+        <TextField fx:id="aValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate" prefHeight="40.0" prefWidth="40.0">
             <HBox.margin>
-                <Insets top="5.0"/>
+                <Insets top="5.0" />
             </HBox.margin>
         </TextField>
-        <Label alignment="CENTER" prefHeight="47.0" prefWidth="49.0" text="x^2 +">
+        <Label alignment="CENTER" prefHeight="47.0" prefWidth="49.0" text="x² +">
             <font>
-                <Font size="15.0"/>
+                <Font size="15.0" />
             </font>
         </Label>
-        <TextField fx:id="bValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate"
-                   prefHeight="40.0" prefWidth="40.0">
+        <TextField fx:id="bValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate" prefHeight="40.0" prefWidth="40.0">
             <HBox.margin>
-                <Insets top="5.0"/>
+                <Insets top="5.0" />
             </HBox.margin>
         </TextField>
         <Label alignment="CENTER" prefHeight="51.0" prefWidth="38.0" text="x +">
             <font>
-                <Font size="15.0"/>
+                <Font size="15.0" />
             </font>
         </Label>
-        <TextField fx:id="cValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate"
-                   prefHeight="40.0" prefWidth="40.0">
+        <TextField fx:id="cValue" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleCalculate" prefHeight="40.0" prefWidth="40.0">
             <HBox.margin>
-                <Insets top="5.0"/>
+                <Insets top="5.0" />
             </HBox.margin>
         </TextField>
     </HBox>
     <HBox alignment="CENTER" prefHeight="39.0" prefWidth="366.0">
         <VBox.margin>
-            <Insets top="5.0"/>
+            <Insets top="5.0" />
         </VBox.margin>
-        <Button fx:id="calculate" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-                mnemonicParsing="false" onAction="#handleCalculate" prefHeight="30.0" prefWidth="80.0"
-                text="Calculate"/>
+        <Button fx:id="calculate" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleCalculate" prefHeight="30.0" prefWidth="80.0" text="Calculate" />
     </HBox>
     <HBox alignment="CENTER" prefHeight="32.0" prefWidth="366.0">
         <VBox.margin>
-            <Insets top="5.0"/>
+            <Insets top="5.0" />
         </VBox.margin>
-        <Label prefHeight="20.0" prefWidth="35.0" text="x =">
+        <Label prefHeight="21.0" prefWidth="31.0" text="x =">
             <font>
-                <Font size="15.0"/>
+                <Font size="15.0" />
             </font>
         </Label>
-        <TextField fx:id="answer1" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="150.0"
-                   editable="false"/>
+        <TextField fx:id="answer1" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="32.0" prefWidth="255.0" />
     </HBox>
     <HBox alignment="CENTER" prefHeight="37.0" prefWidth="366.0">
         <VBox.margin>
-            <Insets top="5.0"/>
+            <Insets top="5.0" />
         </VBox.margin>
-        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="35.0" text="x =">
+        <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="21.0" prefWidth="31.0" text="x =">
             <font>
-                <Font size="15.0"/>
+                <Font size="15.0" />
             </font>
         </Label>
-        <TextField fx:id="answer2" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="32.0" prefWidth="150.0"
-                   editable="false"/>
+        <TextField fx:id="answer2" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="32.0" prefWidth="256.0" />
     </HBox>
 </VBox>
