@@ -1,7 +1,48 @@
+
+/**
+ * Utility class for solving quadratic equations of the form
+ * ax² + bx + c = 0.
+ *
+ * <p>Provides methods for obtaining exact solutions and decimal
+ * approximations of the roots.</p>
+ *
+ * @author Gabriel Ovalle
+ */
 public class QuadraticSolver {
 
+    /**
+     * Represents the two roots of a quadratic equation.
+     *
+     * @param root1 the first root of the equation
+     * @param root2 the second root of the equation
+     */
     public record QuadraticRoots(String root1, String root2) {}
 
+
+    /**
+     * Computes the roots of a quadratic equation of the form
+     * ax² + bx + c = 0 using the quadratic formula.
+     *
+     * <p>The returned roots are formatted as strings. Rational roots are
+     * returned in simplified fractional form when possible. Irrational roots
+     * are returned in simplified radical form. Complex roots are returned
+     * using the imaginary unit {@code i}.</p>
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *     <li>x² - 5x + 6 = 0 → 2, 3</li>
+     *     <li>x² - 4x + 2 = 0 → 2 + √2, 2 - √2</li>
+     *     <li>x² + 2x + 5 = 0 → -1 + 2i, -1 - 2i</li>
+     * </ul>
+     *
+     * @param a the coefficient of x²; must not be zero
+     * @param b the coefficient of x
+     * @param c the constant term
+     * @return a {@code QuadraticRoots} object containing the two roots of the
+     *         equation as formatted strings
+     * @throws ArithmeticException if {@code a} is zero, since the equation is
+     *         not quadratic
+     */
     public static QuadraticRoots getSolutions(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
@@ -51,6 +92,30 @@ public class QuadraticSolver {
         return roots;
     }
 
+
+    /**
+     * Computes decimal approximations of the real roots of a quadratic equation
+     * of the form ax² + bx + c = 0 using the quadratic formula.
+     *
+     * <p>The returned roots are formatted as decimal strings. Unlike
+     * {@link #getSolutions(Fraction, Fraction, Fraction)}, this method does not
+     * preserve exact fractional, radical, or complex forms.</p>
+     *
+     * <p>If the equation has no real roots (that is, the discriminant is
+     * negative), both returned strings are empty.</p>
+     *
+     * <p>If the equation has a whole number root,
+     * an empty string is returned in its place.</p>
+     *
+     * @param a the coefficient of x²; must not be zero
+     * @param b the coefficient of x
+     * @param c the constant term
+     * @return a {@code QuadraticRoots} object containing decimal
+     *         approximations of the real roots, or empty strings if the
+     *         equation has no real roots or whole number roots.
+     * @throws ArithmeticException if {@code a} is zero, since the equation is
+     *         not quadratic
+     */
     public static QuadraticRoots getDecimalApproximations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
