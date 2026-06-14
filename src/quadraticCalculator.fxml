@@ -69,7 +69,7 @@
     </HBox>
    <HBox prefHeight="45.0" prefWidth="366.0">
       <children>
-         <Button alignment="CENTER" mnemonicParsing="false" onAction="#toggleGraph" prefHeight="30.0" prefWidth="112.0" text="Show Graph" translateX="126.0" visible="false">
+         <Button fx:id="graphToggle" alignment="CENTER" mnemonicParsing="false" onAction="#toggleGraph" prefHeight="30.0" prefWidth="112.0" text="Show Graph" translateX="126.0">
             <HBox.margin>
                <Insets top="5.0" />
             </HBox.margin>

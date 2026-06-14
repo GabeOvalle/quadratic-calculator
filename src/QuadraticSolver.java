@@ -1,9 +1,54 @@
+/**
+ * Utility class for solving quadratic equations of the form
+ * ax² + bx + c = 0.
+ *
+ * <p>Provides methods for obtaining exact solutions and decimal
+ * approximations of the roots.</p>
+ *
+ * @author Gabriel Ovalle
+ */
 public class QuadraticSolver {
 
+    /**
+     * Represents the two roots of a quadratic equation.
+     *
+     * @param root1 the first root of the equation
+     * @param root2 the second root of the equation
+     */
     public record QuadraticRoots(String root1, String root2) {}
 
-    public record DecimalApproximations(Double root1, Double root2) {}
+    /**
+     * Represents the decimal representations of the two roots of a quadratic equation.
+     *
+     * @param root1 the first root of the equation
+     * @param root2 the second root of the equation
+     */
+    public record DecimalRepresentations(Double root1, Double root2) {}
 
+    /**
+     * Computes the roots of a quadratic equation of the form
+     * ax² + bx + c = 0 using the quadratic formula.
+     *
+     * <p>The returned roots are formatted as strings. Rational roots are
+     * returned in simplified fractional form when possible. Irrational roots
+     * are returned in simplified radical form. Complex roots are returned
+     * using the imaginary unit {@code i}.</p>
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *     <li>x² - 5x + 6 = 0 → 2, 3</li>
+     *     <li>x² - 4x + 2 = 0 → 2 + √2, 2 - √2</li>
+     *     <li>x² + 2x + 5 = 0 → -1 + 2i, -1 - 2i</li>
+     * </ul>
+     *
+     * @param a the coefficient of x²; must not be zero
+     * @param b the coefficient of x
+     * @param c the constant term
+     * @return a {@code QuadraticRoots} object containing the two roots of the
+     *         equation as formatted strings
+     * @throws ArithmeticException if {@code a} is zero, since the equation is
+     *         not quadratic
+     */
     public static QuadraticRoots getSolutions(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
@@ -53,22 +98,42 @@ public class QuadraticSolver {
         return roots;
     }
 
-    public static DecimalApproximations getDecimalApproximations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
+    /**
+     * Computes decimal representations of the real roots of a quadratic equation
+     * of the form ax² + bx + c = 0 using the quadratic formula.
+     *
+     * <p>The returned roots are in decimal form. Unlike
+     * {@link #getSolutions(Fraction, Fraction, Fraction)}, this method does not
+     * preserve exact fractional, radical, or complex forms.</p>
+     *
+     * <p>If the equation has no real roots (that is, the discriminant is
+     * negative), both returned doubles are null.</p>
+     *
+     * @param a the coefficient of x²; must not be zero
+     * @param b the coefficient of x
+     * @param c the constant term
+     * @return a {@code DecimalRepresentations} object containing decimal
+     *         representations of the real roots, or null doubles if the
+     *         equation has no real roots.
+     * @throws ArithmeticException if {@code a} is zero, since the equation is
+     *         not quadratic
+     */
+    public static DecimalRepresentations getDecimalRepresentations(Fraction a, Fraction b, Fraction c) throws ArithmeticException {
 
         if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
         }
 
-        DecimalApproximations roots;
+        DecimalRepresentations roots;
 
         Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
 
         if(discriminant.doubleValue() < 0.0) {
-            roots = new DecimalApproximations(null, null);
+            roots = new DecimalRepresentations(null, null);
         } else {
             double root1 = (b.negate().doubleValue() + Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
             double root2 = (b.negate().doubleValue() - Math.sqrt(discriminant.doubleValue())) / (2 * a.doubleValue());
-            roots = new DecimalApproximations(root1, root2);
+            roots = new DecimalRepresentations(root1, root2);
         }
 
         return roots;

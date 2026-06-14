@@ -1,4 +1,7 @@
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 public class TestSuite {
 
@@ -102,12 +105,12 @@ public class TestSuite {
     }
 
     @Nested
-    @DisplayName("getDecimalApproximations Tests")
+    @DisplayName("getDecimalRepresentations Tests")
     class getDecimalApproximationsTests {
         @Test
         @DisplayName("Correctly approximates rational solutions")
         void shouldCalculateCorrectApproximations_whenEquationHasRationalSolutions() {
-            QuadraticSolver.DecimalApproximations answers = QuadraticSolver.getDecimalApproximations(
+            QuadraticSolver.DecimalRepresentations answers = QuadraticSolver.getDecimalRepresentations(
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(-13,1),
                     Fraction.getFraction(6, 1)
@@ -119,7 +122,7 @@ public class TestSuite {
         @Test
         @DisplayName("Correctly approximates irrational solutions")
         void shouldCalculateCorrectApproximations_whenEquationHasIrrationalSolutions() {
-            QuadraticSolver.DecimalApproximations answers = QuadraticSolver.getDecimalApproximations(
+            QuadraticSolver.DecimalRepresentations answers = QuadraticSolver.getDecimalRepresentations(
                     Fraction.getFraction(1, 1),
                     Fraction.getFraction(6, 1),
                     Fraction.getFraction(7, 1)
@@ -131,7 +134,7 @@ public class TestSuite {
         @Test
         @DisplayName("Returns empty strings if solutions are complex")
         void shouldReturnEmptyString_whenEquationHasComplexRoots() {
-            QuadraticSolver.DecimalApproximations answers2 = QuadraticSolver.getDecimalApproximations(
+            QuadraticSolver.DecimalRepresentations answers2 = QuadraticSolver.getDecimalRepresentations(
                     Fraction.getFraction(1, 1),
                     Fraction.getFraction(4, 1),
                     Fraction.getFraction(5, 1)
