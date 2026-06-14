@@ -34,6 +34,10 @@ public class CalculatorController {
     @FXML
     private Button graphToggle;
 
+    private Fraction a;
+    private Fraction b;
+    private Fraction c;
+
     private Stage graphStage;
 
     private GraphController graphController;
@@ -47,21 +51,7 @@ public class CalculatorController {
     }
 
     @FXML
-    private void initialize() {
-        aValue.textProperty().addListener((observable, oldValue, newValue) -> {
-            graphController.clearLineChart();
-        });
-        bValue.textProperty().addListener((observable, oldValue, newValue) -> {
-           graphController.clearLineChart();
-        });
-        cValue.textProperty().addListener((observable, oldValue, newValue) -> {
-            graphController.clearLineChart();
-        });
-    }
-
-    @FXML
     private void handleCalculate(){
-
         //Changes coefficients to zero if TextFields are empty
         if(aValue.getText().isEmpty()) {
             aValue.setText("0");
@@ -74,9 +64,9 @@ public class CalculatorController {
         }
         try{
             //Calculates and displays exact solutions and decimal approximations based on coefficients entered
-            Fraction a = Fraction.getFraction(aValue.getText());
-            Fraction b = Fraction.getFraction(bValue.getText());
-            Fraction c = Fraction.getFraction(cValue.getText());
+            this.a = Fraction.getFraction(aValue.getText());
+            this.b = Fraction.getFraction(bValue.getText());
+            this.c = Fraction.getFraction(cValue.getText());
 
             QuadraticSolver.DecimalRepresentations approximations = QuadraticSolver.getDecimalRepresentations(a, b, c);
 
@@ -88,6 +78,8 @@ public class CalculatorController {
                     QuadraticSolver.getSolutions(a, b, c).root2()
                             + formatDecimalApproximation(approximations.root2())
             );
+
+            graphController.drawGraph(a, b, c);
         } catch(NumberFormatException e){
             //Alerts the user if an input is invalid
             alert("Enter only whole numbers, fractions, or decimals", "");
