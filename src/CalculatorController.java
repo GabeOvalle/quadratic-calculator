@@ -92,8 +92,13 @@ public class CalculatorController {
             //Alerts the user if an input is invalid
             alert("Enter only whole numbers, fractions, or decimals", "");
         } catch(ArithmeticException e){
-            //Alerts the user if the A coefficient is zero
-            alert("Your equation isn't quadratic", "This equation appears to be linear");
+            if(e.getMessage().equals("The denominator must not be zero")) {
+                //Alerts the user if they enter a fraction with a denominator of zero
+                alert("Invalid fraction input", e.getMessage());
+            } else {
+                //Alerts the user if the A coefficient is zero
+                alert("Your equation isn't quadratic", "This equation appears to be linear");
+            }
         }
     }
 
