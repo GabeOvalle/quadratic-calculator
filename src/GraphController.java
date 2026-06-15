@@ -23,29 +23,31 @@ public class GraphController {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("y = " + a + "x² + " + b + "x +" + c);
 
-        for(double x = -10; x <= 10; x+=0.1) {
+        double vertex = -b.doubleValue() / (2 * a.doubleValue());
+        Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
+        Double root2 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
+
+        //double minX = (root2 != null) ? vertex - root2 - 10 : vertex - 10;
+        //double maxX = (root1 != null) ? vertex + root1 + 10 : vertex + 10;
+
+        for(double x = vertex - 10; x <= vertex + 10; x+=1) {
             double y = a.doubleValue() * x * x + b.doubleValue() * x + c.doubleValue();
             series.getData().add(new XYChart.Data<>(x, y));
         }
 
         clearLineChart();
-        graphRoots(a, b, c);
         lineChart.getData().add(series);
+        graphRoots(root1, root2);
     }
 
-    private void graphRoots(Fraction a, Fraction b, Fraction c) {
-        Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
-        Double root2 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
+    private void graphRoots(Double root1, Double root2) {
 
         if(root1 != null && root2 != null) {
-            XYChart.Series<Number, Number> roots =
-                    new XYChart.Series<>();
+            XYChart.Series<Number, Number> roots = new XYChart.Series<>();
 
-            roots.getData().add(
-                    new XYChart.Data<>(root1, 0));
+            roots.getData().add(new XYChart.Data<>(root1, 0));
 
-            roots.getData().add(
-                    new XYChart.Data<>(root2, 0));
+            roots.getData().add(new XYChart.Data<>(root2, 0));
 
             lineChart.getData().add(roots);
         }
