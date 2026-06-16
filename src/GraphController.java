@@ -14,10 +14,6 @@ public class GraphController {
         this.calculatorController = calculatorController;
     }
 
-    public void clearLineChart() {
-        lineChart.getData().clear();
-    }
-
     public void drawGraph(Fraction a, Fraction b, Fraction c) {
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -27,15 +23,30 @@ public class GraphController {
         Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
         Double root2 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
 
-        //double minX = (root2 != null) ? vertex - root2 - 10 : vertex - 10;
-        //double maxX = (root1 != null) ? vertex + root1 + 10 : vertex + 10;
-
         for(double x = vertex - 10; x <= vertex + 10; x+=1) {
             double y = a.doubleValue() * x * x + b.doubleValue() * x + c.doubleValue();
             series.getData().add(new XYChart.Data<>(x, y));
         }
 
-        clearLineChart();
+        NumberAxis xAxis = (NumberAxis)lineChart.getXAxis();
+        NumberAxis yAxis = (NumberAxis)lineChart.getYAxis();
+
+        xAxis.setAutoRanging(false);
+        xAxis.setTickUnit(1);
+        xAxis.setLowerBound(vertex - 10);
+        xAxis.setUpperBound(vertex + 10);
+
+        yAxis.setAutoRanging(false);
+        yAxis.setTickUnit(10);
+        if(a.doubleValue() < 0) {
+            yAxis.setLowerBound(getYValue(a, b, c, vertex - 10) - 10);
+            yAxis.setUpperBound(getYValue(a, b, c, vertex) + 10);
+        } else {
+            yAxis.setLowerBound(getYValue(a, b, c, vertex) - 10);
+            yAxis.setUpperBound(getYValue(a, b, c, vertex - 10) + 10);
+        }
+
+        lineChart.getData().clear();
         lineChart.getData().add(series);
         graphRoots(root1, root2);
     }
@@ -51,5 +62,9 @@ public class GraphController {
 
             lineChart.getData().add(roots);
         }
+    }
+
+    private double getYValue(Fraction a, Fraction b, Fraction c, double x) {
+        return a.doubleValue() * x * x + b.doubleValue() * x + c.doubleValue();
     }
 }
