@@ -51,9 +51,24 @@ public class QuadraticCalculatorDriver extends Application {
             secondaryStage.setScene(new Scene(secondaryRoot));
             GraphController graphController = secondaryLoader.getController();
 
+            FXMLLoader thirdLoader = new FXMLLoader(getClass().getResource("historyView.fxml"));
+            Stage thirdStage = new Stage();
+            Parent thirdRoot = thirdLoader.load();
+            thirdStage.setScene(new Scene(thirdRoot));
+            HistoryViewController historyViewController = thirdLoader.getController();
+
             calculatorController.setGraphController(graphController);
+            calculatorController.setHistoryViewController(historyViewController);
+
             graphController.setCalculatorController(calculatorController);
+
             calculatorController.setGraphStage(secondaryStage);
+            calculatorController.setHistoryStage(thirdStage);
+
+            stage.setOnCloseRequest(event -> {
+                secondaryStage.close();
+                thirdStage.close();
+            });
         } catch(IOException e){
             System.out.println(e.getMessage());
         }

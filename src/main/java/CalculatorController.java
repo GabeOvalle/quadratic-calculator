@@ -35,6 +35,9 @@ public class CalculatorController {
     private Button graphToggle;
 
     @FXML
+    private Button historyToggle;
+
+    @FXML
     public void initialize() {
         UserHistoryUtil.initializeDatabase();
     }
@@ -47,6 +50,10 @@ public class CalculatorController {
 
     private GraphController graphController;
 
+    private Stage historyStage;
+
+    private HistoryViewController historyViewController;
+
     public void setGraphStage(Stage stage) {
         this.graphStage = stage;
     }
@@ -54,6 +61,15 @@ public class CalculatorController {
     public void setGraphController(GraphController graphController) {
         this.graphController = graphController;
     }
+
+    public void setHistoryStage(Stage stage) {
+        this.historyStage = stage;
+    }
+
+    public void setHistoryViewController(HistoryViewController historyViewController) {
+        this.historyViewController = historyViewController;
+    }
+
 
     @FXML
     private void handleCalculate(){
@@ -85,6 +101,8 @@ public class CalculatorController {
             );
 
             graphController.drawGraph(a, b, c);
+            UserHistoryUtil.addEquation("y = " + a + "x² + " + b + "x +" + c);
+            historyViewController.historyList.setItems(UserHistoryUtil.getPastEquations());
         } catch(NumberFormatException e){
             //Alerts the user if an input is invalid
             alert("Enter only whole numbers, fractions, or decimals", "");
@@ -115,6 +133,20 @@ public class CalculatorController {
             graphStage.setOnHidden(event -> {
                 graphToggle.setText("Show Graph");
             });
+        }
+    }
+
+    @FXML
+    private void toggleHistory() {
+        if(historyStage.isShowing()) {
+            historyStage.hide();
+        } else {
+            Stage myStage = (Stage)historyToggle.getScene().getWindow();
+            historyStage.setX(myStage.getX() - 370);
+            historyStage.setY(myStage.getY());
+            historyStage.setTitle("Equation History");
+            historyStage.show();
+            historyViewController.historyList.setItems(UserHistoryUtil.getPastEquations());
         }
     }
 
