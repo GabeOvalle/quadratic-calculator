@@ -14,22 +14,22 @@ import javafx.stage.Stage;
  */
 public class CalculatorController {
     @FXML
-    private TextField aValue;
+    public TextField aValue;
 
     @FXML
-    private TextField bValue;
+    public TextField bValue;
 
     @FXML
-    private TextField cValue;
+    public TextField cValue;
 
     @FXML
     private Button calculate;
 
     @FXML
-    private TextField answer1;
+    public TextField answer1;
 
     @FXML
-    private TextField answer2;
+    public TextField answer2;
 
     @FXML
     private Button graphToggle;
@@ -101,7 +101,10 @@ public class CalculatorController {
             );
 
             graphController.drawGraph(a, b, c);
-            UserHistoryUtil.addEquation("y = " + a + "x² + " + b + "x +" + c);
+            UserHistoryUtil.addEquation(
+                    a + "x² + " + b + "x +" + c,
+                    new UserHistoryUtil.Coefficients(a, b, c)
+            );
             historyViewController.historyList.setItems(UserHistoryUtil.getPastEquations());
         } catch(NumberFormatException e){
             //Alerts the user if an input is invalid
@@ -142,7 +145,7 @@ public class CalculatorController {
             historyStage.hide();
         } else {
             Stage myStage = (Stage)historyToggle.getScene().getWindow();
-            historyStage.setX(myStage.getX() - 370);
+            historyStage.setX(myStage.getX() - 270);
             historyStage.setY(myStage.getY());
             historyStage.setTitle("Equation History");
             historyStage.show();
@@ -176,5 +179,6 @@ public class CalculatorController {
         alert.setContentText(contentText);
         alert.show();
     }
+
 }
 

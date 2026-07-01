@@ -6,7 +6,7 @@ import javafx.scene.chart.XYChart;
 public class GraphController {
 
     @FXML
-    private LineChart<Number, Number> lineChart;
+    public LineChart<Number, Number> lineChart;
 
     private CalculatorController calculatorController;
 
