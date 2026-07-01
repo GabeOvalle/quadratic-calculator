@@ -72,7 +72,7 @@ public class CalculatorController {
 
 
     @FXML
-    private void handleCalculate(){
+    public void handleCalculate(){
         //Changes coefficients to zero if TextFields are empty
         if(aValue.getText().isEmpty()) {
             aValue.setText("0");

@@ -9,14 +9,8 @@ public class HistoryViewController {
 
     private CalculatorController calculatorController;
 
-    private GraphController graphController;
-
     public void setCalculatorController(CalculatorController calculatorController) {
         this.calculatorController = calculatorController;
-    }
-
-    public void setGraphController(GraphController graphController) {
-        this.graphController = graphController;
     }
 
     @FXML
@@ -32,10 +26,7 @@ public class HistoryViewController {
                         calculatorController.bValue.setText(coefficients.b().toString());
                         calculatorController.cValue.setText(coefficients.c().toString());
 
-                        calculatorController.answer1.clear();
-                        calculatorController.answer2.clear();
-
-                        graphController.lineChart.getData().clear();
+                        calculatorController.handleCalculate();
                     }
                 }
             }
