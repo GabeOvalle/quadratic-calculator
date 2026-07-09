@@ -9,6 +9,8 @@ public class HistoryViewController {
 
     private CalculatorController calculatorController;
 
+    private boolean updatingSelection = false;
+
     public void setCalculatorController(CalculatorController calculatorController) {
         this.calculatorController = calculatorController;
     }
@@ -18,7 +20,7 @@ public class HistoryViewController {
         historyList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
-                if(newValue != null) {
+                if(newValue != null && !updatingSelection) {
                     UserHistoryUtil.Coefficients coefficients = UserHistoryUtil.getCoefficients(newValue);
 
                     if(coefficients != null) {
@@ -26,7 +28,7 @@ public class HistoryViewController {
                         calculatorController.bValue.setText(coefficients.b().toString());
                         calculatorController.cValue.setText(coefficients.c().toString());
 
-                        calculatorController.handleCalculate();
+                        calculatorController.calculateAndDisplay();
                     }
                 }
             }
@@ -37,5 +39,11 @@ public class HistoryViewController {
     private void clearHistory() {
         historyList.getItems().clear();
         UserHistoryUtil.clearHistory();
+    }
+
+    public void refreshHistory() {
+        updatingSelection = true;
+        historyList.setItems(UserHistoryUtil.getPastEquations());
+        updatingSelection = false;
     }
 }

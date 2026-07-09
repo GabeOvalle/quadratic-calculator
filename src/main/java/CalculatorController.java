@@ -40,6 +40,21 @@ public class CalculatorController {
     @FXML
     public void initialize() {
         UserHistoryUtil.initializeDatabase();
+
+        aValue.textProperty().addListener((observable, oldValue, newValue) -> {
+            answer1.clear();
+            answer2.clear();
+        });
+
+        bValue.textProperty().addListener((observable, oldValue, newValue) -> {
+            answer1.clear();
+            answer2.clear();
+        });
+
+        cValue.textProperty().addListener((observable, oldValue, newValue) -> {
+            answer1.clear();
+            answer2.clear();
+        });
     }
 
     private Fraction a;
@@ -70,54 +85,16 @@ public class CalculatorController {
         this.historyViewController = historyViewController;
     }
 
-
     @FXML
-    public void handleCalculate(){
-        //Changes coefficients to zero if TextFields are empty
-        if(aValue.getText().isEmpty()) {
-            aValue.setText("0");
-        }
-        if(bValue.getText().isEmpty()) {
-            bValue.setText("0");
-        }
-        if(cValue.getText().isEmpty()) {
-            cValue.setText("0");
-        }
-        try{
-            //Calculates and displays exact solutions and decimal approximations based on coefficients entered
-            this.a = Fraction.getFraction(aValue.getText());
-            this.b = Fraction.getFraction(bValue.getText());
-            this.c = Fraction.getFraction(cValue.getText());
+    private void handleCalculate(){
+        calculateAndDisplay();
 
-            QuadraticSolver.DecimalRepresentations approximations = QuadraticSolver.getDecimalRepresentations(a, b, c);
+        UserHistoryUtil.addEquation(
+                a + "x² + " + b + "x +" + c,
+                new UserHistoryUtil.Coefficients(a, b, c)
+        );
 
-            answer1.setText(
-                    QuadraticSolver.getSolutions(a, b, c).root1()
-                            + formatDecimalApproximation(approximations.root1())
-            );
-            answer2.setText(
-                    QuadraticSolver.getSolutions(a, b, c).root2()
-                            + formatDecimalApproximation(approximations.root2())
-            );
-
-            graphController.drawGraph(a, b, c);
-            UserHistoryUtil.addEquation(
-                    a + "x² + " + b + "x +" + c,
-                    new UserHistoryUtil.Coefficients(a, b, c)
-            );
-            historyViewController.historyList.setItems(UserHistoryUtil.getPastEquations());
-        } catch(NumberFormatException e){
-            //Alerts the user if an input is invalid
-            alert("Enter only whole numbers, fractions, or decimals", "");
-        } catch(ArithmeticException e){
-            if(e.getMessage().equals("The denominator must not be zero")) {
-                //Alerts the user if they enter a fraction with a denominator of zero
-                alert("Invalid fraction input", e.getMessage());
-            } else {
-                //Alerts the user if the A coefficient is zero
-                alert("Your equation isn't quadratic", "This equation appears to be linear");
-            }
-        }
+        historyViewController.refreshHistory();
     }
 
     @FXML
@@ -149,7 +126,52 @@ public class CalculatorController {
             historyStage.setY(myStage.getY());
             historyStage.setTitle("Equation History");
             historyStage.show();
-            historyViewController.historyList.setItems(UserHistoryUtil.getPastEquations());
+
+            historyViewController.refreshHistory();
+        }
+    }
+
+    public void calculateAndDisplay() {
+        //Changes coefficients to zero if TextFields are empty
+        if(aValue.getText().isEmpty()) {
+            aValue.setText("0");
+        }
+        if(bValue.getText().isEmpty()) {
+            bValue.setText("0");
+        }
+        if(cValue.getText().isEmpty()) {
+            cValue.setText("0");
+        }
+        try{
+            //Calculates and displays exact solutions and decimal approximations based on coefficients entered
+            this.a = Fraction.getFraction(aValue.getText());
+            this.b = Fraction.getFraction(bValue.getText());
+            this.c = Fraction.getFraction(cValue.getText());
+
+            QuadraticSolver.DecimalRepresentations approximations = QuadraticSolver.getDecimalRepresentations(a, b, c);
+
+            answer1.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root1()
+                            + formatDecimalApproximation(approximations.root1())
+            );
+            answer2.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root2()
+                            + formatDecimalApproximation(approximations.root2())
+            );
+
+            graphController.drawGraph(a, b, c);
+
+        } catch(NumberFormatException e){
+            //Alerts the user if an input is invalid
+            alert("Enter only whole numbers, fractions, or decimals", "");
+        } catch(ArithmeticException e){
+            if(e.getMessage() != null && e.getMessage().equals("The denominator must not be zero")) {
+                //Alerts the user if they enter a fraction with a denominator of zero
+                alert("Invalid fraction input", e.getMessage());
+            } else {
+                //Alerts the user if the A coefficient is zero
+                alert("Your equation isn't quadratic", "This equation appears to be linear");
+            }
         }
     }
 

@@ -8,10 +8,10 @@
    <children>
       <LineChart fx:id="lineChart" prefHeight="400.0" prefWidth="563.0">
         <xAxis>
-          <NumberAxis side="BOTTOM" />
+          <NumberAxis fx:id="xAxis" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis side="LEFT" />
+          <NumberAxis fx:id="yAxis" side="LEFT" />
         </yAxis>
       </LineChart>
    </children>
