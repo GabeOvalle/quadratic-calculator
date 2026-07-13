@@ -9,6 +9,10 @@
  */
 public class QuadraticSolver {
 
+    private QuadraticSolver() {
+        throw new AssertionError("Utility class cannot be instantiated");
+    }
+
     /**
      * Represents the two roots of a quadratic equation.
      *
@@ -137,6 +141,68 @@ public class QuadraticSolver {
         }
 
         return roots;
+    }
+
+    /**
+     * Creates a properly formatted quadratic equation string from the given
+     * coefficients.
+     *
+     * <p>The returned string is formatted in the form
+     * {@code ax² + bx + c}, omitting any terms whose coefficients are zero.
+     * Coefficients of {@code 1} and {@code -1} are simplified (for example,
+     * {@code x²} instead of {@code 1x²} and {@code -x} instead of
+     * {@code -1x}). If all coefficients are zero, the method returns
+     * {@code "0"}.</p>
+     *
+     * @param a the coefficient of the {@code x²} term
+     * @param b the coefficient of the {@code x} term
+     * @param c the constant term
+     * @return a formatted string representing the quadratic equation
+     */
+    public static String formatEquation(Fraction a, Fraction b, Fraction c) {
+        StringBuilder equation = new StringBuilder();
+
+        if (!a.equals(Fraction.ZERO)) {
+            if (a.equals(Fraction.ONE)) {
+                equation.append("x²");
+            } else if (a.equals(Fraction.ONE.negate())) {
+                equation.append("-x²");
+            } else {
+                equation.append(a).append("x²");
+            }
+        }
+
+        if (!b.equals(Fraction.ZERO)) {
+            if (!equation.isEmpty()) {
+                equation.append(b.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
+            } else if (b.compareTo(Fraction.ZERO) < 0) {
+                equation.append("-");
+            }
+
+            Fraction absB = b.abs();
+
+            if (absB.equals(Fraction.ONE)) {
+                equation.append("x");
+            } else {
+                equation.append(absB).append("x");
+            }
+        }
+
+        if (!c.equals(Fraction.ZERO)) {
+            if (!equation.isEmpty()) {
+                equation.append(c.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
+            } else if (c.compareTo(Fraction.ZERO) < 0) {
+                equation.append("-");
+            }
+
+            equation.append(c.abs());
+        }
+
+        if (equation.isEmpty()) {
+            return "0";
+        }
+
+        return equation.toString();
     }
 
     private static String formatAnswer(double answer) {

@@ -3,6 +3,15 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
+/**
+ * Displays and manages the graph of a quadratic equation.
+ *
+ * <p>This controller is responsible for plotting quadratic functions on
+ * a JavaFX {@link LineChart}, displaying the vertex and x-intercepts,
+ * and allowing the user to zoom and pan the graph using the mouse.</p>
+ *
+ * @author Gabriel Ovalle
+ */
 public class GraphController {
 
     @FXML
@@ -14,15 +23,36 @@ public class GraphController {
     @FXML
     private NumberAxis yAxis;
 
+    private XYChart.Series<Number, Number> series;
+
+    private Fraction a;
+    private Fraction b;
+    private Fraction c;
+
     private double lastMouseX;
     private double lastMouseY;
 
     private CalculatorController calculatorController;
 
+    /**
+     * Sets the calculator controller associated with this graph controller.
+     *
+     * <p>This reference allows the graph controller to communicate with the
+     * main calculator controller when necessary.</p>
+     *
+     * @param calculatorController the calculator controller associated with
+     *                             this graph controller
+     */
     public void setCalculatorController(CalculatorController calculatorController) {
         this.calculatorController = calculatorController;
     }
 
+    /**
+     * Initializes the graph window.
+     *
+     * <p>Configures the graph axes and registers mouse event handlers for
+     * zooming with the scroll wheel and panning by dragging the graph.</p>
+     */
     @FXML
     private void initialize() {
         xAxis.setAutoRanging(false);
@@ -58,10 +88,26 @@ public class GraphController {
         });
     }
 
+    /**
+     * Draws the graph of a quadratic equation.
+     *
+     * <p>The graph is centered around the vertex of the parabola and
+     * automatically adjusts the viewing window to display the function.
+     * The graph also displays the x-intercepts, when they exist, and the
+     * vertex of the parabola.</p>
+     *
+     * @param a the coefficient of the {@code x²} term
+     * @param b the coefficient of the {@code x} term
+     * @param c the constant term
+     */
     public void drawGraph(Fraction a, Fraction b, Fraction c) {
 
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName("y = " + a + "x² + " + b + "x +" + c);
+        this.a = a;
+        this.b = b;
+        this.c = c;
+
+        this.series = new XYChart.Series<>();
+        series.setName("y = " + QuadraticSolver.formatEquation(a, b, c));
 
         double vertex = -b.doubleValue() / (2 * a.doubleValue());
 
@@ -104,6 +150,14 @@ public class GraphController {
         graphVertex(a, b, c);
     }
 
+    /**
+     * Plots the real x-intercepts of the quadratic function on the graph.
+     *
+     * <p>If the quadratic has no real roots, no intercepts are plotted.</p>
+     *
+     * @param root1 the first real root, or {@code null} if none exists
+     * @param root2 the second real root, or {@code null} if none exists
+     */
     private void graphRoots(Double root1, Double root2) {
 
         if(root1 != null && root2 != null) {
@@ -117,6 +171,13 @@ public class GraphController {
         }
     }
 
+    /**
+     * Plots the vertex of the quadratic function on the graph.
+     *
+     * @param a the coefficient of the {@code x²} term
+     * @param b the coefficient of the {@code x} term
+     * @param c the constant term
+     */
    private void graphVertex(Fraction a, Fraction b, Fraction c) {
        XYChart.Series<Number, Number> vertexSeries = new XYChart.Series<>();
 
@@ -130,6 +191,14 @@ public class GraphController {
        lineChart.getData().add(vertexSeries);
    }
 
+    /**
+     * Zooms the specified axis by the given zoom factor while keeping the
+     * current center of the axis fixed.
+     *
+     * @param axis the axis to zoom
+     * @param factor the zoom factor; values greater than {@code 1} zoom in,
+     *               while values less than {@code 1} zoom out
+     */
     private void zoomAxis(NumberAxis axis, double factor) {
 
         double lower = axis.getLowerBound();
@@ -144,6 +213,14 @@ public class GraphController {
         axis.setUpperBound(center + halfRange);
     }
 
+    /**
+     * Pans the x-axis by the specified number of pixels.
+     *
+     * <p>The pixel distance is converted to graph units based on the
+     * current width of the graph.</p>
+     *
+     * @param pixelDelta the horizontal mouse movement in pixels
+     */
     private void panXAxis(double pixelDelta) {
 
         double range = xAxis.getUpperBound() - xAxis.getLowerBound();
@@ -154,6 +231,14 @@ public class GraphController {
         xAxis.setUpperBound(xAxis.getUpperBound() - graphDelta);
     }
 
+    /**
+     * Pans the y-axis by the specified number of pixels.
+     *
+     * <p>The pixel distance is converted to graph units based on the
+     * current height of the graph.</p>
+     *
+     * @param pixelDelta the vertical mouse movement in pixels
+     */
     private void panYAxis(double pixelDelta) {
 
         double range = yAxis.getUpperBound() - yAxis.getLowerBound();
