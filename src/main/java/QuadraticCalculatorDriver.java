@@ -27,22 +27,26 @@ public class QuadraticCalculatorDriver extends Application {
     }
 
     /**
-     * Initializes and displays the primary application window.
+     * Initializes and displays the application windows.
      *
-     * <p>Loads the user interface from the
-     * {@code quadraticCalculator.fxml} file and displays it in the
-     * primary stage.</p>
+     * <p>Loads the main calculator interface, graph window, and equation
+     * history window from their respective FXML files. The controllers are
+     * connected so they can communicate with one another, and the graph and
+     * history stages are associated with the calculator controller.</p>
      *
-     * @param stage the primary stage provided by the JavaFX runtime
+     * <p>When the main application window is closed, the graph and history
+     * windows are also closed automatically.</p>
+     *
+     * @param primaryStage the primary stage provided by the JavaFX runtime
      */
     @Override
-    public void start(Stage stage){
+    public void start(Stage primaryStage){
         try{
             FXMLLoader primaryLoader = new FXMLLoader(getClass().getResource("quadraticCalculator.fxml"));
             Parent primaryRoot = primaryLoader.load();
-            stage.setTitle("Quadratic Calculator");
-            stage.setScene(new Scene(primaryRoot));
-            stage.show();
+            primaryStage.setTitle("Quadratic Calculator");
+            primaryStage.setScene(new Scene(primaryRoot));
+            primaryStage.show();
             CalculatorController calculatorController = primaryLoader.getController();
 
             FXMLLoader secondaryLoader = new FXMLLoader(getClass().getResource("graphWindow.fxml"));
@@ -67,7 +71,7 @@ public class QuadraticCalculatorDriver extends Application {
             calculatorController.setGraphStage(secondaryStage);
             calculatorController.setHistoryStage(thirdStage);
 
-            stage.setOnCloseRequest(event -> {
+            primaryStage.setOnCloseRequest(event -> {
                 secondaryStage.close();
                 thirdStage.close();
             });
