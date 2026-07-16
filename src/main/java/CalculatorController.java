@@ -37,6 +37,13 @@ public class CalculatorController {
     @FXML
     private Button historyToggle;
 
+    /**
+     * Initializes the calculator window.
+     *
+     * <p>Initializes the equation history database and registers listeners
+     * that clear the displayed solutions whenever any coefficient input is
+     * modified.</p>
+     */
     @FXML
     public void initialize() {
         UserHistoryUtil.initializeDatabase();
@@ -69,29 +76,56 @@ public class CalculatorController {
 
     private HistoryViewController historyViewController;
 
+    /**
+     * Sets the stage used to display the graph window.
+     *
+     * @param stage the graph window stage
+     */
     public void setGraphStage(Stage stage) {
         this.graphStage = stage;
     }
 
+    /**
+     * Sets the graph controller associated with this calculator.
+     *
+     * @param graphController the graph controller
+     */
     public void setGraphController(GraphController graphController) {
         this.graphController = graphController;
     }
 
+    /**
+     * Sets the stage used to display the equation history window.
+     *
+     * @param stage the history window stage
+     */
     public void setHistoryStage(Stage stage) {
         this.historyStage = stage;
     }
 
+    /**
+     * Sets the history view controller associated with this calculator.
+     *
+     * @param historyViewController the history view controller
+     */
     public void setHistoryViewController(HistoryViewController historyViewController) {
         this.historyViewController = historyViewController;
     }
 
+    /**
+     * Calculates the solutions of the quadratic equation entered by the user.
+     *
+     * <p>The calculated equation is displayed, graphed, and added to the
+     * equation history. If an invalid coefficient is entered or the equation
+     * is not quadratic, an error dialog is displayed.</p>
+     */
     @FXML
     private void handleCalculate(){
         try {
             calculateAndDisplay();
 
             UserHistoryUtil.addEquation(
-                    QuadraticSolver.formatEquation(a, b, c),
+                    QuadraticSolver.formatEquation(aValue.getText(), bValue.getText(), cValue.getText()),
                     new UserHistoryUtil.Coefficients(a, b, c)
             );
 
@@ -108,9 +142,17 @@ public class CalculatorController {
                 //Alerts the user if the A coefficient is zero
                 alert("Your equation isn't quadratic", "This equation appears to be linear");
             }
+        } catch (Exception e) {
+            alert("Error", e.getMessage());
         }
     }
 
+    /**
+     * Shows or hides the graph window.
+     *
+     * <p>If the graph window is shown, it is positioned directly below the
+     * main calculator window.</p>
+     */
     @FXML
     private void toggleGraph() {
         if(graphStage.isShowing()){
@@ -130,6 +172,13 @@ public class CalculatorController {
         }
     }
 
+    /**
+     * Shows or hides the equation history window.
+     *
+     * <p>If the history window is shown, it is positioned beside the main
+     * calculator window and refreshed with the most recently stored
+     * equations.</p>
+     */
     @FXML
     private void toggleHistory() {
         if(historyStage.isShowing()) {
@@ -145,6 +194,14 @@ public class CalculatorController {
         }
     }
 
+    /**
+     * Calculates and displays the solutions to the current quadratic equation.
+     *
+     * <p>Empty coefficient fields are treated as zero. The exact solutions,
+     * decimal approximations, and graph of the quadratic function are then
+     * displayed. Unlike {@code handleCalculate()}, this method does not add
+     * the equation to the history database.</p>
+     */
     public void calculateAndDisplay() {
         //Changes coefficients to zero if TextFields are empty
         if(aValue.getText().isEmpty()) {

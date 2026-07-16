@@ -107,7 +107,11 @@ public class GraphController {
         this.c = c;
 
         this.series = new XYChart.Series<>();
-        series.setName("y = " + QuadraticSolver.formatEquation(a, b, c));
+        series.setName("y = " + QuadraticSolver.formatEquation(calculatorController.aValue.getText(),
+                                                               calculatorController.bValue.getText(),
+                                                               calculatorController.cValue.getText()
+                                                              )
+        );
 
         double vertex = -b.doubleValue() / (2 * a.doubleValue());
 

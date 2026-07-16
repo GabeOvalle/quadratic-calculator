@@ -159,43 +159,91 @@ public class QuadraticSolver {
      * @param c the constant term
      * @return a formatted string representing the quadratic equation
      */
-    public static String formatEquation(Fraction a, Fraction b, Fraction c) {
+    public static String formatEquation(String a, String b, String c) {
         StringBuilder equation = new StringBuilder();
 
-        if (!a.equals(Fraction.ZERO)) {
-            if (a.equals(Fraction.ONE)) {
-                equation.append("x²");
-            } else if (a.equals(Fraction.ONE.negate())) {
-                equation.append("-x²");
-            } else {
-                equation.append(a).append("x²");
+        if(a.contains(".")) {
+            double aValue = Double.parseDouble(a);
+            if (aValue != 0) {
+                if (aValue == 1) {
+                    equation.append("x²");
+                } else if (aValue == -1) {
+                    equation.append("-x²");
+                } else {
+                    equation.append(a).append("x²");
+                }
+            }
+        } else {
+            Fraction aValue = Fraction.getFraction(a);
+            if (!aValue.equals(Fraction.ZERO)) {
+                if (aValue.equals(Fraction.ONE)) {
+                    equation.append("x²");
+                } else if (aValue.equals(Fraction.ONE.negate())) {
+                    equation.append("-x²");
+                } else {
+                    equation.append(a).append("x²");
+                }
             }
         }
 
-        if (!b.equals(Fraction.ZERO)) {
-            if (!equation.isEmpty()) {
-                equation.append(b.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
-            } else if (b.compareTo(Fraction.ZERO) < 0) {
-                equation.append("-");
+        if(b.contains(".")) {
+            double bValue = Double.parseDouble(b);
+            if (bValue != 0) {
+                if (!equation.isEmpty()) {
+                    equation.append(bValue > 0 ? " + " : " - ");
+                } else if (bValue < 0) {
+                    equation.append("-");
+                }
+
+                double absB = Math.abs(bValue);
+
+                if (absB == 1) {
+                    equation.append("x");
+                } else {
+                    equation.append(absB).append("x");
+                }
             }
+        } else {
+            Fraction bValue = Fraction.getFraction(b);
+            if (!bValue.equals(Fraction.ZERO)) {
+                if (!equation.isEmpty()) {
+                    equation.append(bValue.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
+                } else if (bValue.compareTo(Fraction.ZERO) < 0) {
+                    equation.append("-");
+                }
 
-            Fraction absB = b.abs();
+                Fraction absB = bValue.abs();
 
-            if (absB.equals(Fraction.ONE)) {
-                equation.append("x");
-            } else {
-                equation.append(absB).append("x");
+                if (absB.equals(Fraction.ONE)) {
+                    equation.append("x");
+                } else {
+                    equation.append(absB).append("x");
+                }
             }
         }
 
-        if (!c.equals(Fraction.ZERO)) {
-            if (!equation.isEmpty()) {
-                equation.append(c.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
-            } else if (c.compareTo(Fraction.ZERO) < 0) {
-                equation.append("-");
-            }
+        if(c.contains(".")) {
+            double cValue = Double.parseDouble(c);
+            if (cValue != 0) {
+                if (!equation.isEmpty()) {
+                    equation.append(cValue > 0 ? " + " : " - ");
+                } else if (cValue < 0) {
+                    equation.append("-");
+                }
 
-            equation.append(c.abs());
+                equation.append(Math.abs(cValue));
+            }
+        } else {
+            Fraction cValue = Fraction.getFraction(c);
+            if (!cValue.equals(Fraction.ZERO)) {
+                if (!equation.isEmpty()) {
+                    equation.append(cValue.compareTo(Fraction.ZERO) > 0 ? " + " : " - ");
+                } else if (cValue.compareTo(Fraction.ZERO) < 0) {
+                    equation.append("-");
+                }
+
+                equation.append(cValue.abs());
+            }
         }
 
         if (equation.isEmpty()) {
