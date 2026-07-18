@@ -253,6 +253,66 @@ public class QuadraticSolver {
         return equation.toString();
     }
 
+    /**
+     * Returns the factored form of a quadratic equation with rational roots.
+     *
+     * <p>If the quadratic has rational real roots, the equation is returned
+     * in factored form. Fractional roots are represented using integer
+     * coefficients in each factor (for example, {@code (2x - 1)} instead of
+     * {@code (x - 1/2)}). If the quadratic has irrational or complex roots,
+     * an empty string is returned because an exact factored form over the
+     * rational numbers does not exist.</p>
+     *
+     * @param a the coefficient of the {@code x²} term
+     * @param b the coefficient of the {@code x} term
+     * @param c the constant term
+     * @return the factored form of the quadratic equation, or an empty
+     *         string if the equation cannot be factored over the rational
+     *         numbers
+     */
+    public static String factoredForm(Fraction a, Fraction b, Fraction c) {
+        QuadraticRoots roots = getSolutions(a, b, c);
+
+        if(roots.root1().contains("i") || roots.root1().contains("√") || roots.root2().contains("i") || roots.root2().contains("√")) {
+            return "";
+        }
+
+        Fraction root1 = Fraction.getFraction(roots.root1());
+        Fraction root2 = Fraction.getFraction(roots.root2());
+
+        if(root1.equals(Fraction.ZERO) && root2.equals(Fraction.ZERO)) {
+            return a.equals(Fraction.ONE) ? "x²" : a + "x²";
+        }
+
+        Fraction gcf = a.divideBy(Fraction.getFraction(root1.getDenominator() * root2.getDenominator()));
+
+        StringBuilder factored = new StringBuilder();
+
+        if(root1.equals(Fraction.ZERO)) {
+            factored.append("x");
+        } else {
+            String firstTerm = root1.getDenominator() == 1 ? "x" : root1.getDenominator() + "x";
+            String secondTerm = root1.getNumerator() < 0 ? " + " + Math.abs(root1.getNumerator()) : " - " + root1.getNumerator();
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
+        }
+
+        if(root2.equals(Fraction.ZERO)) {
+            factored.insert(0, "x");
+        } else {
+            String firstTerm = root2.getDenominator() == 1 ? "x" : root2.getDenominator() + "x";
+            String secondTerm = root2.getNumerator() < 0 ? " + " + Math.abs(root2.getNumerator()) : " - " + root2.getNumerator();
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
+        }
+
+        if(gcf.equals(Fraction.ONE.negate())) {
+            factored.insert(0, "-");
+        } else if(!gcf.equals(Fraction.ONE)) {
+            factored.insert(0, gcf);
+        }
+
+        return factored.toString();
+    }
+
     private static String formatAnswer(double answer) {
         if(answer == 0.0) {
             return "";

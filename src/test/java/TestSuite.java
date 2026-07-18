@@ -237,4 +237,116 @@ public class TestSuite {
             assertEquals("1/5x² - 0.25x + 0.5", result);
         }
     }
+
+    @Nested
+    @DisplayName("factoredForm Tests")
+    class factoredFormTests {
+        @Test
+        @DisplayName("Distinct integer roots")
+        void testDistinctIntegerRoots() {
+            assertEquals(
+                    "(x - 3)(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-5),
+                            Fraction.getFraction(6))
+            );
+        }
+
+        @Test
+        @DisplayName("Repeated integer roots")
+        void testRepeatedRoot() {
+            assertEquals(
+                    "(x - 2)(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-4),
+                            Fraction.getFraction(4))
+            );
+        }
+
+        @Test
+        @DisplayName("One zero root")
+        void testOneRootZero() {
+            assertEquals(
+                    "x(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-2),
+                            Fraction.ZERO)
+            );
+        }
+
+        @Test
+        @DisplayName("Two zero roots")
+        void testBothRootsZero() {
+            assertEquals(
+                    "x²",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.ZERO)
+            );
+        }
+
+        @Test
+        @DisplayName("Two fraction roots")
+        void testFractionRoots() {
+            assertEquals(
+                    "(x - 1)(6x - 1)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction(6),
+                            Fraction.getFraction(-7),
+                            Fraction.ONE)
+            );
+        }
+
+        @Test
+        @DisplayName("Negative leading coefficient")
+        void testNegativeLeadingCoefficient() {
+            assertEquals(
+                    "-(x - 2)(x - 3)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction(-1),
+                            Fraction.getFraction(5),
+                            Fraction.getFraction(-6))
+            );
+        }
+
+        @Test
+        @DisplayName("Fraction gcf and negative roots")
+        void testFractionGCFAndNegativeRoots() {
+            assertEquals(
+                    "1/2(x + 1)(x + 4)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction("1/2"),
+                            Fraction.getFraction("5/2"),
+                            Fraction.getFraction(2))
+            );
+        }
+
+        @Test
+        @DisplayName("Complex roots")
+        void testComplexRoots() {
+            assertEquals(
+                    "",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.ONE)
+            );
+        }
+
+        @Test
+        @DisplayName("Irrational roots")
+        void testIrrationalRoots() {
+            assertEquals(
+                    "",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.getFraction(-2))
+            );
+        }
+    }
 }
