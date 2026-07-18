@@ -281,33 +281,41 @@ public class QuadraticSolver {
         Fraction root2 = Fraction.getFraction(roots.root2());
 
         if(root1.equals(Fraction.ZERO) && root2.equals(Fraction.ZERO)) {
-            return a.equals(Fraction.ONE) ? "x²" : a + "x²";
+            return a.equals(Fraction.ONE) ? "x²"
+                    : a.equals(Fraction.ONE.negate()) ? "-x²"
+                    : a + "x²";
         }
 
         Fraction gcf = a.divideBy(Fraction.getFraction(root1.getDenominator() * root2.getDenominator()));
 
         StringBuilder factored = new StringBuilder();
 
-        if(root1.equals(Fraction.ZERO)) {
-            factored.append("x");
-        } else {
-            String firstTerm = root1.getDenominator() == 1 ? "x" : root1.getDenominator() + "x";
-            String secondTerm = root1.getNumerator() < 0 ? " + " + Math.abs(root1.getNumerator()) : " - " + root1.getNumerator();
-            factored.append("(").append(firstTerm).append(secondTerm).append(")");
-        }
-
-        if(root2.equals(Fraction.ZERO)) {
-            factored.insert(0, "x");
-        } else {
-            String firstTerm = root2.getDenominator() == 1 ? "x" : root2.getDenominator() + "x";
-            String secondTerm = root2.getNumerator() < 0 ? " + " + Math.abs(root2.getNumerator()) : " - " + root2.getNumerator();
-            factored.append("(").append(firstTerm).append(secondTerm).append(")");
-        }
-
         if(gcf.equals(Fraction.ONE.negate())) {
-            factored.insert(0, "-");
+            factored.append("-");
         } else if(!gcf.equals(Fraction.ONE)) {
-            factored.insert(0, gcf);
+            factored.append(gcf);
+        }
+
+        if(root1.equals(Fraction.ZERO) || root2.equals(Fraction.ZERO)) {
+            factored.append("x");
+        }
+
+        if(!root1.equals(Fraction.ZERO)) {
+            String firstTerm = root1.getDenominator() == 1 ? "x"
+                             : root1.getDenominator() + "x";
+            String secondTerm = root1.getNumerator() < 0 ? " + " + Math.abs(root1.getNumerator())
+                              : " - " + root1.getNumerator();
+
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
+        }
+
+        if(!root2.equals(Fraction.ZERO)) {
+            String firstTerm = root2.getDenominator() == 1 ? "x"
+                             : root2.getDenominator() + "x";
+            String secondTerm = root2.getNumerator() < 0 ? " + " + Math.abs(root2.getNumerator())
+                              : " - " + root2.getNumerator();
+
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
         }
 
         return factored.toString();
