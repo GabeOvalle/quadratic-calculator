@@ -29,6 +29,8 @@ public class QuadraticSolver {
      */
     public record DecimalRepresentations(Double root1, Double root2) {}
 
+    public record Vertex(Fraction x, Fraction y) {}
+
     /**
      * Computes the roots of a quadratic equation of the form
      * ax² + bx + c = 0 using the quadratic formula.
@@ -319,6 +321,21 @@ public class QuadraticSolver {
         }
 
         return factored.toString();
+    }
+
+    public static Vertex getVertex(Fraction a, Fraction b, Fraction c) {
+        Fraction xVertex = b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
+
+        Fraction yVertex =
+                a.multiplyBy(xVertex.multiplyBy(xVertex))
+                        .add(b.multiplyBy(xVertex))
+                        .add(c);
+
+        return new Vertex(xVertex, yVertex);
+    }
+
+    public static Fraction getAxisOfSymmetry(Fraction a, Fraction b) {
+        return b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
     }
 
     private static String formatAnswer(double answer) {

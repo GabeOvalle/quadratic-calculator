@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -37,6 +38,15 @@ public class CalculatorController {
     @FXML
     private Button historyToggle;
 
+    @FXML
+    private Label factoredForm;
+
+    @FXML
+    private Label vertex;
+
+    @FXML
+    private Label axis;
+
     /**
      * Initializes the calculator window.
      *
@@ -51,16 +61,28 @@ public class CalculatorController {
         aValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            factoredForm.setText("Factored Form: ");
+            vertex.setText("Vertex: ");
+            axis.setText("Axis of Symmetry: ");
         });
 
         bValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            factoredForm.setText("Factored Form: ");
+            vertex.setText("Vertex: ");
+            axis.setText("Axis of Symmetry: ");
         });
 
         cValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            factoredForm.setText("Factored Form: ");
+            vertex.setText("Vertex: ");
+            axis.setText("Axis of Symmetry: ");
         });
     }
 
@@ -228,6 +250,13 @@ public class CalculatorController {
                 QuadraticSolver.getSolutions(a, b, c).root2()
                         + formatDecimalApproximation(approximations.root2())
         );
+
+        factoredForm.setText("Factored Form: " + QuadraticSolver.factoredForm(a, b, c));
+
+        QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(a, b, c);
+        vertex.setText("Vertex: (" + vert.x() + ", " + vert.y() + ")");
+
+        axis.setText("Axis of Symmetry: x = " + QuadraticSolver.getAxisOfSymmetry(a, b));
 
         graphController.drawGraph(a, b, c);
     }

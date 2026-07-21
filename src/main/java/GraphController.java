@@ -7,7 +7,7 @@ import javafx.scene.chart.XYChart;
  * Displays and manages the graph of a quadratic equation.
  *
  * <p>This controller is responsible for plotting quadratic functions on
- * a JavaFX {@link LineChart}, displaying the vertex and x-intercepts,
+ * a JavaFX {@link LineChart}, displaying the Vertex and x-intercepts,
  * and allowing the user to zoom and pan the graph using the mouse.</p>
  *
  * @author Gabriel Ovalle
@@ -91,10 +91,10 @@ public class GraphController {
     /**
      * Draws the graph of a quadratic equation.
      *
-     * <p>The graph is centered around the vertex of the parabola and
+     * <p>The graph is centered around the Vertex of the parabola and
      * automatically adjusts the viewing window to display the function.
      * The graph also displays the x-intercepts, when they exist, and the
-     * vertex of the parabola.</p>
+     * Vertex of the parabola.</p>
      *
      * @param a the coefficient of the {@code x²} term
      * @param b the coefficient of the {@code x} term
@@ -176,7 +176,7 @@ public class GraphController {
     }
 
     /**
-     * Plots the vertex of the quadratic function on the graph.
+     * Plots the Vertex of the quadratic function on the graph.
      *
      * @param a the coefficient of the {@code x²} term
      * @param b the coefficient of the {@code x} term

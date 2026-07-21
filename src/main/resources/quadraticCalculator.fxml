@@ -4,11 +4,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="279.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CalculatorController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CalculatorController">
    <HBox prefHeight="38.0" prefWidth="366.0">
       <children>
          <Button fx:id="historyToggle" mnemonicParsing="false" onAction="#toggleHistory" prefHeight="34.0" prefWidth="65.0" text="History">
@@ -79,13 +80,23 @@
         </Label>
         <TextField fx:id="answer2" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="32.0" prefWidth="256.0" />
     </HBox>
-   <HBox prefHeight="55.0" prefWidth="366.0">
+   <HBox alignment="TOP_CENTER" prefHeight="113.0" prefWidth="350.0" spacing="5.0">
       <children>
-         <Button fx:id="graphToggle" alignment="CENTER" mnemonicParsing="false" onAction="#toggleGraph" prefHeight="30.0" prefWidth="112.0" text="Show Graph" translateX="126.0">
+         <TitledPane alignment="BOTTOM_CENTER" expanded="false" prefHeight="104.0" prefWidth="203.0" text="Additional Info">
             <HBox.margin>
-               <Insets top="5.0" />
+               <Insets />
             </HBox.margin>
-         </Button>
+            <content>
+               <VBox prefHeight="47.0" prefWidth="201.0" spacing="5.0">
+                  <children>
+                     <Label fx:id="factoredForm" text="Factored Form: " />
+                     <Label fx:id="vertex" text="Vertex: " />
+                     <Label fx:id="axis" text="Axis of Symmetry: " />
+                  </children>
+               </VBox>
+            </content>
+         </TitledPane>
+         <Button fx:id="graphToggle" alignment="CENTER" mnemonicParsing="false" onAction="#toggleGraph" prefHeight="30.0" prefWidth="112.0" text="Show Graph" />
       </children>
       <VBox.margin>
          <Insets top="5.0" />
