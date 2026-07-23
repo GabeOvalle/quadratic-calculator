@@ -1,8 +1,5 @@
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 /**
@@ -39,13 +36,7 @@ public class CalculatorController {
     private Button historyToggle;
 
     @FXML
-    private Label factoredForm;
-
-    @FXML
-    private Label vertex;
-
-    @FXML
-    private Label axis;
+    private TextArea additionalInfo;
 
     /**
      * Initializes the calculator window.
@@ -58,31 +49,47 @@ public class CalculatorController {
     public void initialize() {
         UserHistoryUtil.initializeDatabase();
 
+        additionalInfo.setText(
+                "Factored Form: \n\n" +
+                        "Vertex: \n\n" +
+                        "Axis of Symmetry: "
+
+        );
+
         aValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
 
-            factoredForm.setText("Factored Form: ");
-            vertex.setText("Vertex: ");
-            axis.setText("Axis of Symmetry: ");
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
 
         bValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
 
-            factoredForm.setText("Factored Form: ");
-            vertex.setText("Vertex: ");
-            axis.setText("Axis of Symmetry: ");
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
 
         cValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
 
-            factoredForm.setText("Factored Form: ");
-            vertex.setText("Vertex: ");
-            axis.setText("Axis of Symmetry: ");
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
     }
 
@@ -242,21 +249,37 @@ public class CalculatorController {
 
         QuadraticSolver.DecimalRepresentations approximations = QuadraticSolver.getDecimalRepresentations(a, b, c);
 
-        answer1.setText(
-                QuadraticSolver.getSolutions(a, b, c).root1()
-                        + formatDecimalApproximation(approximations.root1())
-        );
-        answer2.setText(
-                QuadraticSolver.getSolutions(a, b, c).root2()
-                        + formatDecimalApproximation(approximations.root2())
-        );
+        if(!formatDecimalApproximation(approximations.root1()).isEmpty()) {
+            answer1.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root1() + "; "
+                            + formatDecimalApproximation(approximations.root1())
+            );
+        } else {
+            answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
+        }
 
-        factoredForm.setText("Factored Form: " + QuadraticSolver.factoredForm(a, b, c));
+        if(!formatDecimalApproximation(approximations.root2()).isEmpty()) {
+            answer2.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root2() + "; "
+                            + formatDecimalApproximation(approximations.root2())
+            );
+        } else {
+            answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
+        }
+
+        String factoredForm = "Factored Form: " + QuadraticSolver.factoredForm(a, b, c);
 
         QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(a, b, c);
-        vertex.setText("Vertex: (" + vert.x() + ", " + vert.y() + ")");
+        String vertex = "Vertex: (" + vert.x() + ", " + vert.y() + ")";
 
-        axis.setText("Axis of Symmetry: x = " + QuadraticSolver.getAxisOfSymmetry(a, b));
+        String aos = "Axis of Symmetry: x = " + QuadraticSolver.getAxisOfSymmetry(a, b);
+
+        additionalInfo.setText(
+                factoredForm + "\n\n" +
+                        vertex + "\n\n" +
+                        aos
+
+        );
 
         graphController.drawGraph(a, b, c);
     }
@@ -271,9 +294,9 @@ public class CalculatorController {
 
         if(Math.floor(approx) != approx) {
             if(String.valueOf(approx).length() > String.format("%.6f", approx).length()) {
-                formattedApprox = "; ≈" + String.format("%.6f", approx);
+                formattedApprox = "≈" + String.format("%.6f", approx);
             } else {
-                formattedApprox = "; " + approx;
+                formattedApprox = String.valueOf(approx);
             }
         }
 

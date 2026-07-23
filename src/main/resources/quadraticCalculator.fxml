@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
@@ -87,11 +88,9 @@
                <Insets />
             </HBox.margin>
             <content>
-               <VBox prefHeight="47.0" prefWidth="201.0" spacing="5.0">
+               <VBox prefHeight="200.0" prefWidth="100.0">
                   <children>
-                     <Label fx:id="factoredForm" text="Factored Form: " />
-                     <Label fx:id="vertex" text="Vertex: " />
-                     <Label fx:id="axis" text="Axis of Symmetry: " />
+                     <TextArea fx:id="additionalInfo" prefHeight="76.0" prefWidth="183.0" />
                   </children>
                </VBox>
             </content>
