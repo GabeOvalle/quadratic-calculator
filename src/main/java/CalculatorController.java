@@ -267,19 +267,29 @@ public class CalculatorController {
             answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
         }
 
+        StringBuilder info = new StringBuilder();
+
         String factoredForm = "Factored Form: " + QuadraticSolver.factoredForm(a, b, c);
+        info.append(factoredForm);
+        info.append("\n\n");
 
         QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(a, b, c);
         String vertex = "Vertex: (" + vert.x() + ", " + vert.y() + ")";
+        info.append(vertex);
+        if(Math.floor(vert.x().doubleValue()) != vert.x().doubleValue()
+                || Math.floor(vert.y().doubleValue()) != vert.y().doubleValue()) {
+            info.append(" ≈ (").append(vert.x().doubleValue()).append(", ").append(vert.y().doubleValue()).append(")");
+        }
+        info.append("\n\n");
 
-        String aos = "Axis of Symmetry: x = " + QuadraticSolver.getAxisOfSymmetry(a, b);
+        Fraction axisOfSymmetry = QuadraticSolver.getAxisOfSymmetry(a, b);
+        String aos = "Axis of Symmetry: x = " + axisOfSymmetry;
+        info.append(aos);
+        if(Math.floor(axisOfSymmetry.doubleValue()) != axisOfSymmetry.doubleValue()) {
+            info.append(" ≈ ").append(axisOfSymmetry.doubleValue());
+        }
 
-        additionalInfo.setText(
-                factoredForm + "\n\n" +
-                        vertex + "\n\n" +
-                        aos
-
-        );
+        additionalInfo.setText(info.toString());
 
         graphController.drawGraph(a, b, c);
     }

@@ -83,7 +83,7 @@
     </HBox>
    <HBox alignment="TOP_CENTER" prefHeight="113.0" prefWidth="350.0" spacing="5.0">
       <children>
-         <TitledPane alignment="BOTTOM_CENTER" expanded="false" prefHeight="104.0" prefWidth="203.0" text="Additional Info">
+         <TitledPane alignment="BOTTOM_CENTER" expanded="false" prefHeight="117.0" prefWidth="203.0" text="Additional Info">
             <HBox.margin>
                <Insets />
             </HBox.margin>
