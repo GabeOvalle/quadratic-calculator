@@ -103,10 +103,13 @@ public class GraphController {
 
         clearCanvas();
 
-        graphicsContext.setStroke(Color.BLACK);
-        graphicsContext.setFill(Color.BLACK);
+        graphicsContext.setStroke(Color.LIGHTGRAY);
+        graphicsContext.setFill(Color.LIGHTGRAY);
 
         drawGrid();
+
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setFill(Color.BLACK);
 
         drawAxes();
 
@@ -150,9 +153,7 @@ public class GraphController {
 
         double gridSpacing = calculateGridSpacing();
 
-        double firstX =
-                Math.floor(xMin / gridSpacing)
-                        * gridSpacing;
+        double firstX = Math.floor(xMin / gridSpacing) * gridSpacing;
 
         for (double x = firstX; x <= xMax; x += gridSpacing) {
 
@@ -166,9 +167,7 @@ public class GraphController {
             );
         }
 
-        double firstY =
-                Math.floor(yMin / gridSpacing)
-                        * gridSpacing;
+        double firstY = Math.floor(yMin / gridSpacing) * gridSpacing;
 
         for (double y = firstY; y <= yMax; y += gridSpacing) {
 
@@ -269,15 +268,9 @@ public class GraphController {
 
         double gridSpacing = calculateGridSpacing();
 
-        double firstLabel =
-                Math.ceil(xMin / gridSpacing)
-                        * gridSpacing;
+        double firstLabel = Math.ceil(xMin / gridSpacing) * gridSpacing;
 
-        for (
-                double x = firstLabel;
-                x <= xMax;
-                x += gridSpacing
-        ) {
+        for (double x = firstLabel; x <= xMax; x += gridSpacing) {
 
             double screenX = toScreenX(x);
 
@@ -299,15 +292,9 @@ public class GraphController {
 
         double gridSpacing = calculateGridSpacing();
 
-        double firstLabel =
-                Math.ceil(yMin / gridSpacing)
-                        * gridSpacing;
+        double firstLabel = Math.ceil(yMin / gridSpacing) * gridSpacing;
 
-        for (
-                double y = firstLabel;
-                y <= yMax;
-                y += gridSpacing
-        ) {
+        for (double y = firstLabel; y <= yMax; y += gridSpacing) {
 
             double screenY = toScreenY(y);
 
@@ -329,15 +316,9 @@ public class GraphController {
 
         double spacing = calculateGridSpacing();
 
-        double firstTick =
-                Math.ceil(xMin / spacing)
-                        * spacing;
+        double firstTick = Math.ceil(xMin / spacing) * spacing;
 
-        for (
-                double x = firstTick;
-                x <= xMax;
-                x += spacing
-        ) {
+        for (double x = firstTick; x <= xMax; x += spacing) {
 
             double screenX = toScreenX(x);
 
@@ -360,15 +341,9 @@ public class GraphController {
 
         double spacing = calculateGridSpacing();
 
-        double firstTick =
-                Math.ceil(yMin / spacing)
-                        * spacing;
+        double firstTick = Math.ceil(yMin / spacing) * spacing;
 
-        for (
-                double y = firstTick;
-                y <= yMax;
-                y += spacing
-        ) {
+        for (double y = firstTick; y <= yMax; y += spacing) {
 
             double screenY = toScreenY(y);
 
@@ -440,15 +415,9 @@ public class GraphController {
      */
     private void drawRoots() {
 
-        Double root1 =
-                QuadraticSolver
-                        .getDecimalRepresentations(a, b, c)
-                        .root1();
+        Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
 
-        Double root2 =
-                QuadraticSolver
-                        .getDecimalRepresentations(a, b, c)
-                        .root2();
+        Double root2 = QuadraticSolver.getDecimalRepresentations(a, b, c).root2();
 
         if (root1 != null) {
             drawPoint(root1, 0);
@@ -464,9 +433,7 @@ public class GraphController {
      */
     private void drawVertex() {
 
-        double vertexX =
-                -b.doubleValue()
-                        / (2 * a.doubleValue());
+        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
 
         double vertexY = calculateY(vertexX);
 
@@ -570,16 +537,11 @@ public class GraphController {
      */
     private void setupMouseHandlers() {
 
-        /*
-         * Zoom using the mouse wheel.
-         */
         canvas.setOnScroll(event -> {
 
-            double mouseX =
-                    toMathX(event.getX());
+            double mouseX = toMathX(event.getX());
 
-            double mouseY =
-                    toMathY(event.getY());
+            double mouseY = toMathY(event.getY());
 
             double zoomFactor;
 
@@ -589,18 +551,11 @@ public class GraphController {
                 zoomFactor = 1.1;
             }
 
-            zoom(
-                    mouseX,
-                    mouseY,
-                    zoomFactor
-            );
+            zoom(mouseX, mouseY, zoomFactor);
 
             event.consume();
         });
 
-        /*
-         * Begin panning.
-         */
         canvas.setOnMousePressed(event -> {
 
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -610,18 +565,13 @@ public class GraphController {
             }
         });
 
-        /*
-         * Pan while dragging.
-         */
         canvas.setOnMouseDragged(event -> {
 
             if (event.getButton() == MouseButton.PRIMARY) {
 
-                double dx =
-                        event.getX() - lastMouseX;
+                double dx = event.getX() - lastMouseX;
 
-                double dy =
-                        event.getY() - lastMouseY;
+                double dy = event.getY() - lastMouseY;
 
                 pan(dx, dy);
 
@@ -642,26 +592,15 @@ public class GraphController {
      * @param centerY the mathematical y-coordinate at the cursor
      * @param factor the zoom factor
      */
-    private void zoom(
-            double centerX,
-            double centerY,
-            double factor) {
+    private void zoom(double centerX, double centerY, double factor) {
 
-        xMin =
-                centerX
-                        + (xMin - centerX) * factor;
+        xMin = centerX + (xMin - centerX) * factor;
 
-        xMax =
-                centerX
-                        + (xMax - centerX) * factor;
+        xMax = centerX + (xMax - centerX) * factor;
 
-        yMin =
-                centerY
-                        + (yMin - centerY) * factor;
+        yMin = centerY + (yMin - centerY) * factor;
 
-        yMax =
-                centerY
-                        + (yMax - centerY) * factor;
+        yMax = centerY + (yMax - centerY) * factor;
 
         draw();
     }
@@ -674,19 +613,13 @@ public class GraphController {
      */
     private void pan(double dx, double dy) {
 
-        double xUnitsPerPixel =
-                (xMax - xMin)
-                        / canvas.getWidth();
+        double xUnitsPerPixel = (xMax - xMin) / canvas.getWidth();
 
-        double yUnitsPerPixel =
-                (yMax - yMin)
-                        / canvas.getHeight();
+        double yUnitsPerPixel = (yMax - yMin) / canvas.getHeight();
 
-        double xShift =
-                dx * xUnitsPerPixel;
+        double xShift = dx * xUnitsPerPixel;
 
-        double yShift =
-                dy * yUnitsPerPixel;
+        double yShift = dy * yUnitsPerPixel;
 
         xMin -= xShift;
         xMax -= xShift;
@@ -709,14 +642,9 @@ public class GraphController {
 
         double rawSpacing = range / 10;
 
-        double magnitude =
-                Math.pow(
-                        10,
-                        Math.floor(Math.log10(rawSpacing))
-                );
+        double magnitude = Math.pow(10, Math.floor(Math.log10(rawSpacing)));
 
-        double normalized =
-                rawSpacing / magnitude;
+        double normalized = rawSpacing / magnitude;
 
         if (normalized < 2) {
             return 1 * magnitude;
