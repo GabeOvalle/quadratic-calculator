@@ -2,6 +2,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
 
 
 /**
@@ -28,17 +29,11 @@ public class GraphController {
     private Fraction b;
     private Fraction c;
 
-    /*
-     * The mathematical coordinates currently visible on the graph.
-     */
     private double xMin = -10;
     private double xMax = 10;
     private double yMin = -10;
     private double yMax = 10;
 
-    /*
-     * Used for mouse dragging.
-     */
     private double lastMouseX;
     private double lastMouseY;
 
@@ -85,13 +80,7 @@ public class GraphController {
         this.b = b;
         this.c = c;
 
-        /*
-         * Calculate the vertex so the initial view can be centered
-         * around the important part of the parabola.
-         */
-        double vertexX =
-                -b.doubleValue()
-                        / (2 * a.doubleValue());
+        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
 
         double vertexY = calculateY(vertexX);
 
@@ -114,6 +103,9 @@ public class GraphController {
 
         clearCanvas();
 
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setFill(Color.BLACK);
+
         drawGrid();
 
         drawAxes();
@@ -121,6 +113,9 @@ public class GraphController {
         drawAxisTicks();
 
         drawAxisLabels();
+
+        graphicsContext.setStroke(Color.RED);
+        graphicsContext.setFill(Color.RED);
 
         if (a != null && b != null && c != null) {
 
@@ -409,9 +404,7 @@ public class GraphController {
      */
     private void drawQuadratic() {
 
-        double step =
-                (xMax - xMin)
-                        / canvas.getWidth();
+        double step = (xMax - xMin) / canvas.getWidth();
 
         boolean firstPoint = true;
 
