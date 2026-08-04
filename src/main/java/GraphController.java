@@ -3,9 +3,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -41,7 +45,22 @@ public class GraphController {
     private TextField yValue;
 
     @FXML
+    private Button toggleAOSButton;
+    private boolean aosIsShowing;
+
+    @FXML
     private Button resetButton;
+
+    @FXML
+    private ListView<String> pointsList;
+    private List<Double> xVals = new ArrayList<>();
+    private List<Double> yVals = new ArrayList<>();
+
+    @FXML
+    private Button undoButton;
+
+    @FXML
+    private Button clearPointsButton;
 
     private Fraction a;
     private Fraction b;
@@ -51,9 +70,6 @@ public class GraphController {
     private double xMax = 10;
     private double yMin = -10;
     private double yMax = 10;
-
-    private Double xPlotted;
-    private Double yPlotted;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -66,15 +82,9 @@ public class GraphController {
         setupMouseHandlers();
 
         xValue.textProperty().addListener((observable, oldValue, newValue) -> {
-
             yLabel.setVisible(false);
             yValue.clear();
             yValue.setVisible(false);
-
-            this.xPlotted = null;
-            this.yPlotted = null;
-
-            draw();
         });
 
         draw();
@@ -95,15 +105,24 @@ public class GraphController {
         equationLabel.setVisible(true);
         xLabel.setVisible(true);
         xValue.setVisible(true);
+        toggleAOSButton.setVisible(true);
         resetButton.setVisible(true);
+
+        pointsList.setVisible(true);
+        pointsList.getItems().clear();
+        undoButton.setVisible(true);
+        clearPointsButton.setVisible(true);
 
         xValue.clear();
         yLabel.setVisible(false);
         yValue.clear();
         yValue.setVisible(false);
 
-        this.xPlotted = null;
-        this.yPlotted = null;
+        aosIsShowing = false;
+        toggleAOSButton.setText("Show Axis of Symmetry");
+
+        xVals.clear();
+        yVals.clear();
 
         this.a = a;
         this.b = b;
@@ -126,32 +145,75 @@ public class GraphController {
 
     @FXML
     private void plotPoint() {
-        try {
-            Fraction x = Fraction.getFraction(xValue.getText());
-            double xPoint = x.doubleValue();
-            double yPoint = calculateY(x.doubleValue());
+        if(!xValue.getText().isEmpty()) {
+            try {
+                Fraction x = Fraction.getFraction(xValue.getText());
+                double xPoint = x.doubleValue();
+                double yPoint = calculateY(x.doubleValue());
 
-            this.xPlotted = xPoint;
-            this.yPlotted = yPoint;
+                xVals.add(xPoint);
+                yVals.add(yPoint);
+                pointsList.getItems().add("(" + xValue.getText() + ", " + yPoint + ")");
 
-            yLabel.setVisible(true);
-            yValue.setVisible(true);
-            yValue.setText(String.valueOf(yPoint));
+                yLabel.setVisible(true);
+                yValue.setVisible(true);
+                yValue.setText(String.valueOf(yPoint));
 
-            panToPoint(xPoint, yPoint);
+                panToPoint(xPoint, yPoint);
 
-            graphicsContext.setFill(Color.RED);
-            drawPoint(xPoint, yPoint);
-        } catch(NumberFormatException e){
-            CalculatorController.alert("Enter only whole numbers, fractions, or decimals", "");
-        } catch(ArithmeticException e){
-            CalculatorController.alert("Invalid fraction input", e.getMessage());
+                graphicsContext.setFill(Color.RED);
+                drawPoint(xPoint, yPoint);
+
+            } catch(NumberFormatException e){
+                CalculatorController.alert("Enter only whole numbers, fractions, or decimals", "");
+            } catch(ArithmeticException e){
+                CalculatorController.alert("Invalid fraction input", e.getMessage());
+            }
         }
     }
 
     @FXML
     private void resetGraph() {
         drawGraph(a, b, c);
+    }
+
+    @FXML
+    private void toggleAOS() {
+        if(!aosIsShowing) {
+            aosIsShowing = true;
+            toggleAOSButton.setText("Hide Axis of Symmetry");
+            draw();
+        } else {
+            aosIsShowing = false;
+            toggleAOSButton.setText("Show Axis of Symmetry");
+            draw();
+        }
+    }
+
+    @FXML
+    private void undoLastPoint() {
+        if(!pointsList.getItems().isEmpty()) {
+            xVals.removeLast();
+            yVals.removeLast();
+            pointsList.getItems().removeLast();
+
+            draw();
+        }
+    }
+
+    @FXML
+    private void clearPoints() {
+        if(!pointsList.getItems().isEmpty()) {
+            xVals.clear();
+            yVals.clear();
+            pointsList.getItems().clear();
+
+            yLabel.setVisible(false);
+            yValue.clear();
+            yValue.setVisible(false);
+
+            draw();
+        }
     }
 
     private void draw() {
@@ -172,6 +234,13 @@ public class GraphController {
 
         drawAxisLabels();
 
+        graphicsContext.setStroke(Color.BLUE);
+        graphicsContext.setFill(Color.BLUE);
+
+        if(a != null && b != null && c != null && aosIsShowing) {
+            drawAOS();
+        }
+
         graphicsContext.setStroke(Color.RED);
         graphicsContext.setFill(Color.RED);
 
@@ -182,10 +251,11 @@ public class GraphController {
             drawRoots();
 
             drawVertex();
+
         }
 
-        if(xPlotted != null && yPlotted != null) {
-            drawPoint(xPlotted, yPlotted);
+        if(!xVals.isEmpty() && !yVals.isEmpty()) {
+            drawPlottedPoints();
         }
     }
 
@@ -472,6 +542,42 @@ public class GraphController {
         double vertexY = calculateY(vertexX);
 
         drawPoint(vertexX, vertexY);
+    }
+
+    private void drawAOS() {
+        double aos = QuadraticSolver.getAxisOfSymmetry(a, b).doubleValue();
+
+        if (xMin <= aos && xMax >= aos) {
+
+            double screenX = toScreenX(aos);
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    canvas.getHeight(),
+                    screenX,
+                    10
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX - 5,
+                    20
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX + 5,
+                    20
+            );
+        }
+    }
+
+    private void drawPlottedPoints() {
+        for(int i = 0; i < xVals.size(); i++) {
+            drawPoint(xVals.get(i), yVals.get(i));
+        }
     }
 
     private void drawPoint(double x, double y) {
