@@ -1,6 +1,9 @@
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 
@@ -20,10 +23,25 @@ public class GraphController {
 
     @FXML
     private Canvas canvas;
-
     private GraphicsContext graphicsContext;
 
-    private CalculatorController calculatorController;
+    @FXML
+    private Label equationLabel;
+
+    @FXML
+    private Label xLabel;
+
+    @FXML
+    private TextField xValue;
+
+    @FXML
+    private Label yLabel;
+
+    @FXML
+    private TextField yValue;
+
+    @FXML
+    private Button resetButton;
 
     private Fraction a;
     private Fraction b;
@@ -34,15 +52,12 @@ public class GraphController {
     private double yMin = -10;
     private double yMax = 10;
 
+    private Double xPlotted;
+    private Double yPlotted;
+
     private double lastMouseX;
     private double lastMouseY;
 
-    /**
-     * Initializes the graph controller.
-     *
-     * <p>Obtains the graphics context from the canvas and registers
-     * mouse event handlers for zooming and panning.</p>
-     */
     @FXML
     private void initialize() {
 
@@ -50,18 +65,19 @@ public class GraphController {
 
         setupMouseHandlers();
 
+        xValue.textProperty().addListener((observable, oldValue, newValue) -> {
+
+            yLabel.setVisible(false);
+            yValue.clear();
+            yValue.setVisible(false);
+
+            this.xPlotted = null;
+            this.yPlotted = null;
+
+            draw();
+        });
+
         draw();
-    }
-
-    /**
-     * Sets the calculator controller associated with this graph.
-     *
-     * @param calculatorController the calculator controller
-     */
-    public void setCalculatorController(
-            CalculatorController calculatorController) {
-
-        this.calculatorController = calculatorController;
     }
 
     /**
@@ -76,9 +92,24 @@ public class GraphController {
      */
     public void drawGraph(Fraction a, Fraction b, Fraction c) {
 
+        equationLabel.setVisible(true);
+        xLabel.setVisible(true);
+        xValue.setVisible(true);
+        resetButton.setVisible(true);
+
+        xValue.clear();
+        yLabel.setVisible(false);
+        yValue.clear();
+        yValue.setVisible(false);
+
+        this.xPlotted = null;
+        this.yPlotted = null;
+
         this.a = a;
         this.b = b;
         this.c = c;
+
+        equationLabel.setText("y = " + QuadraticSolver.formatEquation(a.toString(), b.toString(), c.toString()));
 
         double vertexX = -b.doubleValue() / (2 * a.doubleValue());
 
@@ -93,12 +124,36 @@ public class GraphController {
         draw();
     }
 
-    /**
-     * Redraws the entire graph.
-     *
-     * <p>The graph consists of the background, grid lines, coordinate
-     * axes, quadratic function, roots, and vertex.</p>
-     */
+    @FXML
+    private void plotPoint() {
+        try {
+            Fraction x = Fraction.getFraction(xValue.getText());
+            double xPoint = x.doubleValue();
+            double yPoint = calculateY(x.doubleValue());
+
+            this.xPlotted = xPoint;
+            this.yPlotted = yPoint;
+
+            yLabel.setVisible(true);
+            yValue.setVisible(true);
+            yValue.setText(String.valueOf(yPoint));
+
+            panToPoint(xPoint, yPoint);
+
+            graphicsContext.setFill(Color.RED);
+            drawPoint(xPoint, yPoint);
+        } catch(NumberFormatException e){
+            CalculatorController.alert("Enter only whole numbers, fractions, or decimals", "");
+        } catch(ArithmeticException e){
+            CalculatorController.alert("Invalid fraction input", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void resetGraph() {
+        drawGraph(a, b, c);
+    }
+
     private void draw() {
 
         clearCanvas();
@@ -128,13 +183,13 @@ public class GraphController {
 
             drawVertex();
         }
+
+        if(xPlotted != null && yPlotted != null) {
+            drawPoint(xPlotted, yPlotted);
+        }
     }
 
-    /**
-     * Clears the entire canvas before a new graph is drawn.
-     */
     private void clearCanvas() {
-
         graphicsContext.clearRect(
                 0,
                 0,
@@ -143,12 +198,6 @@ public class GraphController {
         );
     }
 
-    /**
-     * Draws the coordinate grid.
-     *
-     * <p>The grid spacing is determined dynamically based on the
-     * current zoom level.</p>
-     */
     private void drawGrid() {
 
         double gridSpacing = calculateGridSpacing();
@@ -182,9 +231,6 @@ public class GraphController {
         }
     }
 
-    /**
-     * Draws the x-axis and y-axis if they are currently visible.
-     */
     private void drawAxes() {
         drawXAxis();
         drawYAxis();
@@ -371,12 +417,6 @@ public class GraphController {
                 .replaceAll("\\.$", "");
     }
 
-    /**
-     * Draws the quadratic function.
-     *
-     * <p>The function is sampled across the visible x-coordinate range
-     * and connected with line segments.</p>
-     */
     private void drawQuadratic() {
 
         double step = (xMax - xMin) / canvas.getWidth();
@@ -410,9 +450,6 @@ public class GraphController {
         }
     }
 
-    /**
-     * Draws the real roots of the quadratic function.
-     */
     private void drawRoots() {
 
         Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
@@ -428,9 +465,6 @@ public class GraphController {
         }
     }
 
-    /**
-     * Draws the vertex of the quadratic function.
-     */
     private void drawVertex() {
 
         double vertexX = -b.doubleValue() / (2 * a.doubleValue());
@@ -440,12 +474,6 @@ public class GraphController {
         drawPoint(vertexX, vertexY);
     }
 
-    /**
-     * Draws a point at a specified mathematical coordinate.
-     *
-     * @param x the mathematical x-coordinate
-     * @param y the mathematical y-coordinate
-     */
     private void drawPoint(double x, double y) {
 
         double screenX = toScreenX(x);
@@ -461,80 +489,28 @@ public class GraphController {
         );
     }
 
-    /**
-     * Calculates the y-coordinate of the quadratic function for a
-     * specified x-coordinate.
-     *
-     * @param x the x-coordinate
-     * @return the corresponding y-coordinate
-     */
     private double calculateY(double x) {
-
         return a.doubleValue() * x * x
                 + b.doubleValue() * x
                 + c.doubleValue();
     }
 
-    /**
-     * Converts a mathematical x-coordinate into a canvas x-coordinate.
-     *
-     * @param x the mathematical x-coordinate
-     * @return the corresponding canvas x-coordinate
-     */
     private double toScreenX(double x) {
-
-        return (x - xMin)
-                / (xMax - xMin)
-                * canvas.getWidth();
+        return (x - xMin) / (xMax - xMin) * canvas.getWidth();
     }
 
-    /**
-     * Converts a mathematical y-coordinate into a canvas y-coordinate.
-     *
-     * <p>The y-axis is inverted in screen coordinates, so larger
-     * mathematical y-values correspond to smaller canvas y-values.</p>
-     *
-     * @param y the mathematical y-coordinate
-     * @return the corresponding canvas y-coordinate
-     */
     private double toScreenY(double y) {
-
-        return canvas.getHeight()
-                - (y - yMin)
-                / (yMax - yMin)
-                * canvas.getHeight();
+        return canvas.getHeight() - (y - yMin) / (yMax - yMin) * canvas.getHeight();
     }
 
-    /**
-     * Converts a canvas x-coordinate into a mathematical x-coordinate.
-     *
-     * @param screenX the canvas x-coordinate
-     * @return the corresponding mathematical x-coordinate
-     */
     private double toMathX(double screenX) {
-
-        return xMin
-                + screenX / canvas.getWidth()
-                * (xMax - xMin);
+        return xMin + screenX / canvas.getWidth() * (xMax - xMin);
     }
 
-    /**
-     * Converts a canvas y-coordinate into a mathematical y-coordinate.
-     *
-     * @param screenY the canvas y-coordinate
-     * @return the corresponding mathematical y-coordinate
-     */
     private double toMathY(double screenY) {
-
-        return yMin
-                + (canvas.getHeight() - screenY)
-                / canvas.getHeight()
-                * (yMax - yMin);
+        return yMin + (canvas.getHeight() - screenY) / canvas.getHeight() * (yMax - yMin);
     }
 
-    /**
-     * Sets up mouse handlers for zooming and panning.
-     */
     private void setupMouseHandlers() {
 
         canvas.setOnScroll(event -> {
@@ -581,17 +557,6 @@ public class GraphController {
         });
     }
 
-    /**
-     * Zooms the graph around the point beneath the mouse cursor.
-     *
-     * <p>The point beneath the cursor remains fixed while the graph
-     * zooms in or out, providing behavior similar to interactive
-     * graphing applications.</p>
-     *
-     * @param centerX the mathematical x-coordinate at the cursor
-     * @param centerY the mathematical y-coordinate at the cursor
-     * @param factor the zoom factor
-     */
     private void zoom(double centerX, double centerY, double factor) {
 
         xMin = centerX + (xMin - centerX) * factor;
@@ -605,12 +570,6 @@ public class GraphController {
         draw();
     }
 
-    /**
-     * Pans the graph by a specified number of screen pixels.
-     *
-     * @param dx the horizontal pixel displacement
-     * @param dy the vertical pixel displacement
-     */
     private void pan(double dx, double dy) {
 
         double xUnitsPerPixel = (xMax - xMin) / canvas.getWidth();
@@ -630,12 +589,20 @@ public class GraphController {
         draw();
     }
 
-    /**
-     * Calculates an appropriate grid spacing based on the current
-     * zoom level.
-     *
-     * @return the spacing between grid lines
-     */
+    public void panToPoint(double x, double y) {
+
+        double xRange = xMax - xMin;
+        double yRange = yMax - yMin;
+
+        xMin = x - xRange / 2;
+        xMax = x + xRange / 2;
+
+        yMin = y - yRange / 2;
+        yMax = y + yRange / 2;
+
+        draw();
+    }
+
     private double calculateGridSpacing() {
 
         double range = xMax - xMin;

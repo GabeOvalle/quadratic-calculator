@@ -294,6 +294,14 @@ public class CalculatorController {
         graphController.drawGraph(a, b, c);
     }
 
+    public static void alert(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.show();
+    }
+
     private static String formatDecimalApproximation(Double approx) {
 
         if(approx == null) {
@@ -312,14 +320,5 @@ public class CalculatorController {
 
         return formattedApprox;
     }
-
-    private static void alert(String headerText, String contentText){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        alert.show();
-    }
-
 }
 

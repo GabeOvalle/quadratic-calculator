@@ -64,8 +64,6 @@ public class QuadraticCalculatorDriver extends Application {
             calculatorController.setGraphController(graphController);
             calculatorController.setHistoryViewController(historyViewController);
 
-            graphController.setCalculatorController(calculatorController);
-
             historyViewController.setCalculatorController(calculatorController);
 
             calculatorController.setGraphStage(secondaryStage);
