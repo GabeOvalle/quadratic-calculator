@@ -167,6 +167,8 @@ public class CalculatorController {
             if(e.getMessage() != null && e.getMessage().equals("The denominator must not be zero")) {
                 //Alerts the user if they enter a fraction with a denominator of zero
                 alert("Invalid fraction input", e.getMessage());
+            } else if (e.getMessage() != null && e.getMessage().contains("overflow")) {
+                alert("Overflow Error", "Use smaller numbers");
             } else {
                 //Alerts the user if the A coefficient is zero
                 alert("Your equation isn't quadratic", "This equation appears to be linear");

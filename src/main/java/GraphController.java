@@ -90,59 +90,6 @@ public class GraphController {
         draw();
     }
 
-    /**
-     * Draws the specified quadratic function on the graph.
-     *
-     * <p>The function's coefficients are stored and the graph is
-     * redrawn using the current coordinate range.</p>
-     *
-     * @param a the coefficient of the x² term
-     * @param b the coefficient of the x term
-     * @param c the constant term
-     */
-    public void drawGraph(Fraction a, Fraction b, Fraction c) {
-
-        equationLabel.setVisible(true);
-        xLabel.setVisible(true);
-        xValue.setVisible(true);
-        toggleAOSButton.setVisible(true);
-        resetButton.setVisible(true);
-
-        pointsList.setVisible(true);
-        pointsList.getItems().clear();
-        undoButton.setVisible(true);
-        clearPointsButton.setVisible(true);
-
-        xValue.clear();
-        yLabel.setVisible(false);
-        yValue.clear();
-        yValue.setVisible(false);
-
-        aosIsShowing = false;
-        toggleAOSButton.setText("Show Axis of Symmetry");
-
-        xVals.clear();
-        yVals.clear();
-
-        this.a = a;
-        this.b = b;
-        this.c = c;
-
-        equationLabel.setText("y = " + QuadraticSolver.formatEquation(a.toString(), b.toString(), c.toString()));
-
-        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
-
-        double vertexY = calculateY(vertexX);
-
-        xMin = Math.min(vertexX - 10, -10);
-        xMax = Math.max(vertexX + 10, 10);
-
-        yMin = Math.min(vertexY - 10, -10);
-        yMax = Math.max(vertexY + 10, 10);
-
-        draw();
-    }
-
     @FXML
     private void plotPoint() {
         if(!xValue.getText().isEmpty()) {
@@ -214,6 +161,59 @@ public class GraphController {
 
             draw();
         }
+    }
+
+    /**
+     * Draws the specified quadratic function on the graph.
+     *
+     * <p>The function's coefficients are stored and the graph is
+     * redrawn using the current coordinate range.</p>
+     *
+     * @param a the coefficient of the x² term
+     * @param b the coefficient of the x term
+     * @param c the constant term
+     */
+    public void drawGraph(Fraction a, Fraction b, Fraction c) {
+
+        equationLabel.setVisible(true);
+        xLabel.setVisible(true);
+        xValue.setVisible(true);
+        toggleAOSButton.setVisible(true);
+        resetButton.setVisible(true);
+
+        pointsList.setVisible(true);
+        pointsList.getItems().clear();
+        undoButton.setVisible(true);
+        clearPointsButton.setVisible(true);
+
+        xValue.clear();
+        yLabel.setVisible(false);
+        yValue.clear();
+        yValue.setVisible(false);
+
+        aosIsShowing = false;
+        toggleAOSButton.setText("Show Axis of Symmetry");
+
+        xVals.clear();
+        yVals.clear();
+
+        this.a = a;
+        this.b = b;
+        this.c = c;
+
+        equationLabel.setText("y = " + QuadraticSolver.formatEquation(a.toString(), b.toString(), c.toString()));
+
+        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
+
+        double vertexY = calculateY(vertexX);
+
+        xMin = Math.min(vertexX - 10, -10);
+        xMax = Math.max(vertexX + 10, 10);
+
+        yMin = Math.min(vertexY - 10, -10);
+        yMax = Math.max(vertexY + 10, 10);
+
+        draw();
     }
 
     private void draw() {
