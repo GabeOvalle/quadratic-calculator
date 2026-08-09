@@ -1,7 +1,5 @@
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 /**
@@ -37,6 +35,9 @@ public class CalculatorController {
     @FXML
     private Button historyToggle;
 
+    @FXML
+    private TextArea additionalInfo;
+
     /**
      * Initializes the calculator window.
      *
@@ -48,19 +49,47 @@ public class CalculatorController {
     public void initialize() {
         UserHistoryUtil.initializeDatabase();
 
+        additionalInfo.setText(
+                "Factored Form: \n\n" +
+                        "Vertex: \n\n" +
+                        "Axis of Symmetry: "
+
+        );
+
         aValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
 
         bValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
 
         cValue.textProperty().addListener((observable, oldValue, newValue) -> {
             answer1.clear();
             answer2.clear();
+
+            additionalInfo.setText(
+                    "Factored Form: \n\n" +
+                            "Vertex: \n\n" +
+                            "Axis of Symmetry: "
+
+            );
         });
     }
 
@@ -138,6 +167,8 @@ public class CalculatorController {
             if(e.getMessage() != null && e.getMessage().equals("The denominator must not be zero")) {
                 //Alerts the user if they enter a fraction with a denominator of zero
                 alert("Invalid fraction input", e.getMessage());
+            } else if (e.getMessage() != null && e.getMessage().contains("overflow")) {
+                alert("Overflow Error", "Use smaller numbers");
             } else {
                 //Alerts the user if the A coefficient is zero
                 alert("Your equation isn't quadratic", "This equation appears to be linear");
@@ -220,16 +251,57 @@ public class CalculatorController {
 
         QuadraticSolver.DecimalRepresentations approximations = QuadraticSolver.getDecimalRepresentations(a, b, c);
 
-        answer1.setText(
-                QuadraticSolver.getSolutions(a, b, c).root1()
-                        + formatDecimalApproximation(approximations.root1())
-        );
-        answer2.setText(
-                QuadraticSolver.getSolutions(a, b, c).root2()
-                        + formatDecimalApproximation(approximations.root2())
-        );
+        if(!formatDecimalApproximation(approximations.root1()).isEmpty()) {
+            answer1.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root1() + "; "
+                            + formatDecimalApproximation(approximations.root1())
+            );
+        } else {
+            answer1.setText(QuadraticSolver.getSolutions(a, b, c).root1());
+        }
+
+        if(!formatDecimalApproximation(approximations.root2()).isEmpty()) {
+            answer2.setText(
+                    QuadraticSolver.getSolutions(a, b, c).root2() + "; "
+                            + formatDecimalApproximation(approximations.root2())
+            );
+        } else {
+            answer2.setText(QuadraticSolver.getSolutions(a, b, c).root2());
+        }
+
+        StringBuilder info = new StringBuilder();
+
+        String factoredForm = "Factored Form: " + QuadraticSolver.factoredForm(a, b, c);
+        info.append(factoredForm);
+        info.append("\n\n");
+
+        QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(a, b, c);
+        String vertex = "Vertex: (" + vert.x() + ", " + vert.y() + ")";
+        info.append(vertex);
+        if(Math.floor(vert.x().doubleValue()) != vert.x().doubleValue()
+                || Math.floor(vert.y().doubleValue()) != vert.y().doubleValue()) {
+            info.append(" ≈ (").append(vert.x().doubleValue()).append(", ").append(vert.y().doubleValue()).append(")");
+        }
+        info.append("\n\n");
+
+        Fraction axisOfSymmetry = QuadraticSolver.getAxisOfSymmetry(a, b);
+        String aos = "Axis of Symmetry: x = " + axisOfSymmetry;
+        info.append(aos);
+        if(Math.floor(axisOfSymmetry.doubleValue()) != axisOfSymmetry.doubleValue()) {
+            info.append(" ≈ ").append(axisOfSymmetry.doubleValue());
+        }
+
+        additionalInfo.setText(info.toString());
 
         graphController.drawGraph(a, b, c);
+    }
+
+    public static void alert(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.show();
     }
 
     private static String formatDecimalApproximation(Double approx) {
@@ -242,22 +314,13 @@ public class CalculatorController {
 
         if(Math.floor(approx) != approx) {
             if(String.valueOf(approx).length() > String.format("%.6f", approx).length()) {
-                formattedApprox = "; ≈" + String.format("%.6f", approx);
+                formattedApprox = "≈" + String.format("%.6f", approx);
             } else {
-                formattedApprox = "; " + approx;
+                formattedApprox = String.valueOf(approx);
             }
         }
 
         return formattedApprox;
     }
-
-    private static void alert(String headerText, String contentText){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        alert.show();
-    }
-
 }
 

@@ -29,6 +29,8 @@ public class QuadraticSolver {
      */
     public record DecimalRepresentations(Double root1, Double root2) {}
 
+    public record Vertex(Fraction x, Fraction y) {}
+
     /**
      * Computes the roots of a quadratic equation of the form
      * ax² + bx + c = 0 using the quadratic formula.
@@ -251,6 +253,89 @@ public class QuadraticSolver {
         }
 
         return equation.toString();
+    }
+
+    /**
+     * Returns the factored form of a quadratic equation with rational roots.
+     *
+     * <p>If the quadratic has rational real roots, the equation is returned
+     * in factored form. Fractional roots are represented using integer
+     * coefficients in each factor (for example, {@code (2x - 1)} instead of
+     * {@code (x - 1/2)}). If the quadratic has irrational or complex roots,
+     * an empty string is returned because an exact factored form over the
+     * rational numbers does not exist.</p>
+     *
+     * @param a the coefficient of the {@code x²} term
+     * @param b the coefficient of the {@code x} term
+     * @param c the constant term
+     * @return the factored form of the quadratic equation, or an empty
+     *         string if the equation cannot be factored over the rational
+     *         numbers
+     */
+    public static String factoredForm(Fraction a, Fraction b, Fraction c) {
+        QuadraticRoots roots = getSolutions(a, b, c);
+
+        if(roots.root1().contains("i") || roots.root1().contains("√") || roots.root2().contains("i") || roots.root2().contains("√")) {
+            return "";
+        }
+
+        Fraction root1 = Fraction.getFraction(roots.root1());
+        Fraction root2 = Fraction.getFraction(roots.root2());
+
+        if(root1.equals(Fraction.ZERO) && root2.equals(Fraction.ZERO)) {
+            return a.equals(Fraction.ONE) ? "x²"
+                    : a.equals(Fraction.ONE.negate()) ? "-x²"
+                    : a + "x²";
+        }
+
+        Fraction gcf = a.divideBy(Fraction.getFraction(root1.getDenominator() * root2.getDenominator()));
+
+        StringBuilder factored = new StringBuilder();
+
+        if(gcf.equals(Fraction.ONE.negate())) {
+            factored.append("-");
+        } else if(!gcf.equals(Fraction.ONE)) {
+            factored.append(gcf);
+        }
+
+        if(root1.equals(Fraction.ZERO) || root2.equals(Fraction.ZERO)) {
+            factored.append("x");
+        }
+
+        if(!root1.equals(Fraction.ZERO)) {
+            String firstTerm = root1.getDenominator() == 1 ? "x"
+                             : root1.getDenominator() + "x";
+            String secondTerm = root1.getNumerator() < 0 ? " + " + Math.abs(root1.getNumerator())
+                              : " - " + root1.getNumerator();
+
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
+        }
+
+        if(!root2.equals(Fraction.ZERO)) {
+            String firstTerm = root2.getDenominator() == 1 ? "x"
+                             : root2.getDenominator() + "x";
+            String secondTerm = root2.getNumerator() < 0 ? " + " + Math.abs(root2.getNumerator())
+                              : " - " + root2.getNumerator();
+
+            factored.append("(").append(firstTerm).append(secondTerm).append(")");
+        }
+
+        return factored.toString();
+    }
+
+    public static Vertex getVertex(Fraction a, Fraction b, Fraction c) {
+        Fraction xVertex = b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
+
+        Fraction yVertex =
+                a.multiplyBy(xVertex.multiplyBy(xVertex))
+                        .add(b.multiplyBy(xVertex))
+                        .add(c);
+
+        return new Vertex(xVertex, yVertex);
+    }
+
+    public static Fraction getAxisOfSymmetry(Fraction a, Fraction b) {
+        return b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
     }
 
     private static String formatAnswer(double answer) {

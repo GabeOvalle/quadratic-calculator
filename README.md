@@ -27,3 +27,17 @@
 - Users can clear their equation history from within the application.
 - Equations in the history are formatted using standard mathematical notation, omitting zero terms and simplifying coefficients of 1 and -1.
 - Improved project structure by migrating the application to Gradle for dependency management.
+
+## 8/9/2026 Release
+- Improved the interactivity, usability, and accuracy of the graphing feature by using a Canvas.
+- Added dynamically formatted axis labels and values.
+- Added support for plotting and removing points.
+- Added a ListView for managing plotted points.
+- Added a feature so that users can choose to display the axis of symmetry on the graph.
+- Improved quadratic equation formatting, including support for preserving decimal coefficients.
+- Added an Additional Information window that shows the factored form, vertex, and axis of symmetry of a quadratic equation.
+- Improved error handling for arithmetic overflows.
+- Added additional unit tests for quadratic equation functionality.
+
+## Limitations
+Extremely large or small coefficients may result in arithmetic overflow. The calculator is designed primarily for typical integer, decimal, and fractional quadratic equations.

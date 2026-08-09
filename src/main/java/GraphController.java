@@ -1,255 +1,731 @@
 import javafx.fxml.FXML;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Displays and manages the graph of a quadratic equation.
+ * Controls the graphing window of the Quadratic Calculator.
  *
- * <p>This controller is responsible for plotting quadratic functions on
- * a JavaFX {@link LineChart}, displaying the vertex and x-intercepts,
- * and allowing the user to zoom and pan the graph using the mouse.</p>
+ * <p>This controller uses a JavaFX {@link Canvas} to render quadratic
+ * functions, coordinate axes, grid lines, roots, and the vertex of
+ * the quadratic function.</p>
  *
- * @author Gabriel Ovalle
+ * <p>The graph can be zoomed using the mouse scroll wheel and panned
+ * by dragging with the primary mouse button. The graph is dynamically
+ * redrawn whenever the visible coordinate range changes.</p>
  */
 public class GraphController {
 
     @FXML
-    public LineChart<Number, Number> lineChart;
+    private Canvas canvas;
+    private GraphicsContext graphicsContext;
 
     @FXML
-    private NumberAxis xAxis;
+    private Label equationLabel;
 
     @FXML
-    private NumberAxis yAxis;
+    private Label xLabel;
 
-    private XYChart.Series<Number, Number> series;
+    @FXML
+    private TextField xValue;
+
+    @FXML
+    private Label yLabel;
+
+    @FXML
+    private TextField yValue;
+
+    @FXML
+    private Button toggleAOSButton;
+    private boolean aosIsShowing;
+
+    @FXML
+    private Button resetButton;
+
+    @FXML
+    private ListView<String> pointsList;
+    private List<Double> xVals = new ArrayList<>();
+    private List<Double> yVals = new ArrayList<>();
+
+    @FXML
+    private Button undoButton;
+
+    @FXML
+    private Button clearPointsButton;
 
     private Fraction a;
     private Fraction b;
     private Fraction c;
 
+    private double xMin = -10;
+    private double xMax = 10;
+    private double yMin = -10;
+    private double yMax = 10;
+
     private double lastMouseX;
     private double lastMouseY;
 
-    private CalculatorController calculatorController;
-
-    /**
-     * Sets the calculator controller associated with this graph controller.
-     *
-     * <p>This reference allows the graph controller to communicate with the
-     * main calculator controller when necessary.</p>
-     *
-     * @param calculatorController the calculator controller associated with
-     *                             this graph controller
-     */
-    public void setCalculatorController(CalculatorController calculatorController) {
-        this.calculatorController = calculatorController;
-    }
-
-    /**
-     * Initializes the graph window.
-     *
-     * <p>Configures the graph axes and registers mouse event handlers for
-     * zooming with the scroll wheel and panning by dragging the graph.</p>
-     */
     @FXML
     private void initialize() {
-        xAxis.setAutoRanging(false);
-        yAxis.setAutoRanging(false);
 
-        lineChart.setOnScroll(event -> {
-            double zoomFactor = 1.1;
+        graphicsContext = canvas.getGraphicsContext2D();
 
-            if (event.getDeltaY() < 0) {
-                zoomFactor = 1 / zoomFactor;   // zoom out
+        setupMouseHandlers();
+
+        xValue.textProperty().addListener((observable, oldValue, newValue) -> {
+            yLabel.setVisible(false);
+            yValue.clear();
+            yValue.setVisible(false);
+        });
+
+        draw();
+    }
+
+    @FXML
+    private void plotPoint() {
+        if(!xValue.getText().isEmpty()) {
+            try {
+                Fraction x = Fraction.getFraction(xValue.getText());
+                double xPoint = x.doubleValue();
+                double yPoint = calculateY(x.doubleValue());
+
+                xVals.add(xPoint);
+                yVals.add(yPoint);
+                pointsList.getItems().add("(" + xValue.getText() + ", " + yPoint + ")");
+
+                yLabel.setVisible(true);
+                yValue.setVisible(true);
+                yValue.setText(String.valueOf(yPoint));
+
+                panToPoint(xPoint, yPoint);
+
+                graphicsContext.setFill(Color.RED);
+                drawPoint(xPoint, yPoint);
+
+            } catch(NumberFormatException e){
+                CalculatorController.alert("Enter only whole numbers, fractions, or decimals", "");
+            } catch(ArithmeticException e){
+                CalculatorController.alert("Invalid fraction input", e.getMessage());
             }
+        }
+    }
 
-            zoomAxis(xAxis, zoomFactor);
-            zoomAxis(yAxis, zoomFactor);
+    @FXML
+    private void resetGraph() {
+        drawGraph(a, b, c);
+    }
 
-            event.consume();
-        });
+    @FXML
+    private void toggleAOS() {
+        if(!aosIsShowing) {
+            aosIsShowing = true;
+            toggleAOSButton.setText("Hide Axis of Symmetry");
+            draw();
+        } else {
+            aosIsShowing = false;
+            toggleAOSButton.setText("Show Axis of Symmetry");
+            draw();
+        }
+    }
 
-        lineChart.setOnMousePressed(event -> {
-            lastMouseX = event.getX();
-            lastMouseY = event.getY();
-        });
+    @FXML
+    private void undoLastPoint() {
+        if(!pointsList.getItems().isEmpty()) {
+            xVals.removeLast();
+            yVals.removeLast();
+            pointsList.getItems().removeLast();
 
-        lineChart.setOnMouseDragged(event -> {
-            double dx = event.getX() - lastMouseX;
-            double dy = event.getY() - lastMouseY;
+            draw();
+        }
+    }
 
-            panXAxis(dx);
-            panYAxis( 0 - dy);
+    @FXML
+    private void clearPoints() {
+        if(!pointsList.getItems().isEmpty()) {
+            xVals.clear();
+            yVals.clear();
+            pointsList.getItems().clear();
 
-            lastMouseX = event.getX();
-            lastMouseY = event.getY();
-        });
+            yLabel.setVisible(false);
+            yValue.clear();
+            yValue.setVisible(false);
+
+            draw();
+        }
     }
 
     /**
-     * Draws the graph of a quadratic equation.
+     * Draws the specified quadratic function on the graph.
      *
-     * <p>The graph is centered around the vertex of the parabola and
-     * automatically adjusts the viewing window to display the function.
-     * The graph also displays the x-intercepts, when they exist, and the
-     * vertex of the parabola.</p>
+     * <p>The function's coefficients are stored and the graph is
+     * redrawn using the current coordinate range.</p>
      *
-     * @param a the coefficient of the {@code x²} term
-     * @param b the coefficient of the {@code x} term
+     * @param a the coefficient of the x² term
+     * @param b the coefficient of the x term
      * @param c the constant term
      */
     public void drawGraph(Fraction a, Fraction b, Fraction c) {
+
+        equationLabel.setVisible(true);
+        xLabel.setVisible(true);
+        xValue.setVisible(true);
+        toggleAOSButton.setVisible(true);
+        resetButton.setVisible(true);
+
+        pointsList.setVisible(true);
+        pointsList.getItems().clear();
+        undoButton.setVisible(true);
+        clearPointsButton.setVisible(true);
+
+        xValue.clear();
+        yLabel.setVisible(false);
+        yValue.clear();
+        yValue.setVisible(false);
+
+        aosIsShowing = false;
+        toggleAOSButton.setText("Show Axis of Symmetry");
+
+        xVals.clear();
+        yVals.clear();
 
         this.a = a;
         this.b = b;
         this.c = c;
 
-        this.series = new XYChart.Series<>();
-        series.setName("y = " + QuadraticSolver.formatEquation(calculatorController.aValue.getText(),
-                                                               calculatorController.bValue.getText(),
-                                                               calculatorController.cValue.getText()
-                                                              )
-        );
+        equationLabel.setText("y = " + QuadraticSolver.formatEquation(a.toString(), b.toString(), c.toString()));
 
-        double vertex = -b.doubleValue() / (2 * a.doubleValue());
+        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
 
-        double minX = Math.min(vertex - 10, -10);
-        double maxX = Math.max(vertex + 10, 10);
-        double minY = Double.POSITIVE_INFINITY;
-        double maxY = Double.NEGATIVE_INFINITY;
-        double step = 0.05;
+        double vertexY = calculateY(vertexX);
 
-        for (double x = minX; x <= maxX; x += step) {
-            double y = a.doubleValue() * x * x
-                    + b.doubleValue() * x
-                    + c.doubleValue();
+        xMin = Math.min(vertexX - 10, -10);
+        xMax = Math.max(vertexX + 10, 10);
 
-            minY = Math.min(minY, y);
-            maxY = Math.max(maxY, y);
+        yMin = Math.min(vertexY - 10, -10);
+        yMax = Math.max(vertexY + 10, 10);
 
-            series.getData().add(new XYChart.Data<>(x, y));
+        draw();
+    }
+
+    private void draw() {
+
+        clearCanvas();
+
+        graphicsContext.setStroke(Color.LIGHTGRAY);
+        graphicsContext.setFill(Color.LIGHTGRAY);
+
+        drawGrid();
+
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setFill(Color.BLACK);
+
+        drawAxes();
+
+        drawAxisTicks();
+
+        drawAxisLabels();
+
+        graphicsContext.setStroke(Color.BLUE);
+        graphicsContext.setFill(Color.BLUE);
+
+        if(a != null && b != null && c != null && aosIsShowing) {
+            drawAOS();
         }
 
-        xAxis.setLowerBound(minX);
-        xAxis.setUpperBound(maxX);
-        xAxis.setTickUnit(2);
+        graphicsContext.setStroke(Color.RED);
+        graphicsContext.setFill(Color.RED);
 
-        yAxis.setLowerBound(minY - 1);
-        yAxis.setUpperBound(maxY + 1);
+        if (a != null && b != null && c != null) {
 
-        lineChart.setCreateSymbols(false);
-        lineChart.setAnimated(false);
+            drawQuadratic();
 
-        xAxis.setForceZeroInRange(true);
-        yAxis.setForceZeroInRange(true);
+            drawRoots();
 
-        lineChart.getData().clear();
-        lineChart.getData().add(series);
+            drawVertex();
+
+        }
+
+        if(!xVals.isEmpty() && !yVals.isEmpty()) {
+            drawPlottedPoints();
+        }
+    }
+
+    private void clearCanvas() {
+        graphicsContext.clearRect(
+                0,
+                0,
+                canvas.getWidth(),
+                canvas.getHeight()
+        );
+    }
+
+    private void drawGrid() {
+
+        double gridSpacing = calculateGridSpacing();
+
+        double firstX = Math.floor(xMin / gridSpacing) * gridSpacing;
+
+        for (double x = firstX; x <= xMax; x += gridSpacing) {
+
+            double screenX = toScreenX(x);
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    0,
+                    screenX,
+                    canvas.getHeight()
+            );
+        }
+
+        double firstY = Math.floor(yMin / gridSpacing) * gridSpacing;
+
+        for (double y = firstY; y <= yMax; y += gridSpacing) {
+
+            double screenY = toScreenY(y);
+
+            graphicsContext.strokeLine(
+                    0,
+                    screenY,
+                    canvas.getWidth(),
+                    screenY
+            );
+        }
+    }
+
+    private void drawAxes() {
+        drawXAxis();
+        drawYAxis();
+    }
+
+    private void drawAxisLabels() {
+        drawXAxisLabels();
+        drawYAxisLabels();
+    }
+
+    private void drawAxisTicks() {
+        drawXAxisTicks();
+        drawYAxisTicks();
+    }
+
+    private void drawXAxis() {
+
+        if (yMin <= 0 && yMax >= 0) {
+
+            double screenY = toScreenY(0);
+
+            graphicsContext.strokeLine(
+                    0,
+                    screenY,
+                    canvas.getWidth() - 10,
+                    screenY
+            );
+
+            graphicsContext.strokeLine(
+                    canvas.getWidth() - 10,
+                    screenY,
+                    canvas.getWidth() - 20,
+                    screenY - 5
+            );
+
+            graphicsContext.strokeLine(
+                    canvas.getWidth() - 10,
+                    screenY,
+                    canvas.getWidth() - 20,
+                    screenY + 5
+            );
+        }
+    }
+
+    private void drawYAxis() {
+
+        if (xMin <= 0 && xMax >= 0) {
+
+            double screenX = toScreenX(0);
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    canvas.getHeight(),
+                    screenX,
+                    10
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX - 5,
+                    20
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX + 5,
+                    20
+            );
+        }
+    }
+
+    private void drawXAxisLabels() {
+
+        if (yMin > 0 || yMax < 0) {
+            return;
+        }
+
+        double axisY = toScreenY(0);
+
+        double gridSpacing = calculateGridSpacing();
+
+        double firstLabel = Math.ceil(xMin / gridSpacing) * gridSpacing;
+
+        for (double x = firstLabel; x <= xMax; x += gridSpacing) {
+
+            double screenX = toScreenX(x);
+
+            graphicsContext.fillText(
+                    formatAxisValue(x),
+                    screenX,
+                    axisY + 20
+            );
+        }
+    }
+
+    private void drawYAxisLabels() {
+
+        if (xMin > 0 || xMax < 0) {
+            return;
+        }
+
+        double axisX = toScreenX(0);
+
+        double gridSpacing = calculateGridSpacing();
+
+        double firstLabel = Math.ceil(yMin / gridSpacing) * gridSpacing;
+
+        for (double y = firstLabel; y <= yMax; y += gridSpacing) {
+
+            double screenY = toScreenY(y);
+
+            graphicsContext.fillText(
+                    formatAxisValue(y),
+                    axisX - 30,
+                    screenY
+            );
+        }
+    }
+
+    private void drawXAxisTicks() {
+
+        if (yMin > 0 || yMax < 0) {
+            return;
+        }
+
+        double axisY = toScreenY(0);
+
+        double spacing = calculateGridSpacing();
+
+        double firstTick = Math.ceil(xMin / spacing) * spacing;
+
+        for (double x = firstTick; x <= xMax; x += spacing) {
+
+            double screenX = toScreenX(x);
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    axisY - 5,
+                    screenX,
+                    axisY + 5
+            );
+        }
+    }
+
+    private void drawYAxisTicks() {
+
+        if (xMin > 0 || xMax < 0) {
+            return;
+        }
+
+        double axisX = toScreenX(0);
+
+        double spacing = calculateGridSpacing();
+
+        double firstTick = Math.ceil(yMin / spacing) * spacing;
+
+        for (double y = firstTick; y <= yMax; y += spacing) {
+
+            double screenY = toScreenY(y);
+
+            graphicsContext.strokeLine(
+                    axisX - 5,
+                    screenY,
+                    axisX + 5,
+                    screenY
+            );
+        }
+    }
+
+    private String formatAxisValue(double value) {
+
+        if (Math.abs(value) < 1e-10) {
+            value = 0;
+        }
+
+        if (value == Math.rint(value)) {
+            return String.format("%.0f", value);
+        }
+
+        return String.format("%.6f", value)
+                .replaceAll("0+$", "")
+                .replaceAll("\\.$", "");
+    }
+
+    private void drawQuadratic() {
+
+        double step = (xMax - xMin) / canvas.getWidth();
+
+        boolean firstPoint = true;
+
+        double previousScreenX = 0;
+        double previousScreenY = 0;
+
+        for (double x = xMin; x <= xMax; x += step) {
+
+            double y = calculateY(x);
+
+            double screenX = toScreenX(x);
+            double screenY = toScreenY(y);
+
+            if (!firstPoint) {
+
+                graphicsContext.strokeLine(
+                        previousScreenX,
+                        previousScreenY,
+                        screenX,
+                        screenY
+                );
+            }
+
+            previousScreenX = screenX;
+            previousScreenY = screenY;
+
+            firstPoint = false;
+        }
+    }
+
+    private void drawRoots() {
 
         Double root1 = QuadraticSolver.getDecimalRepresentations(a, b, c).root1();
+
         Double root2 = QuadraticSolver.getDecimalRepresentations(a, b, c).root2();
-        graphRoots(root1, root2);
-        graphVertex(a, b, c);
-    }
 
-    /**
-     * Plots the real x-intercepts of the quadratic function on the graph.
-     *
-     * <p>If the quadratic has no real roots, no intercepts are plotted.</p>
-     *
-     * @param root1 the first real root, or {@code null} if none exists
-     * @param root2 the second real root, or {@code null} if none exists
-     */
-    private void graphRoots(Double root1, Double root2) {
+        if (root1 != null) {
+            drawPoint(root1, 0);
+        }
 
-        if(root1 != null && root2 != null) {
-            XYChart.Series<Number, Number> roots = new XYChart.Series<>();
-
-            roots.getData().add(new XYChart.Data<>(root1, 0));
-
-            roots.getData().add(new XYChart.Data<>(root2, 0));
-
-            lineChart.getData().add(roots);
+        if (root2 != null && !root2.equals(root1)) {
+            drawPoint(root2, 0);
         }
     }
 
-    /**
-     * Plots the vertex of the quadratic function on the graph.
-     *
-     * @param a the coefficient of the {@code x²} term
-     * @param b the coefficient of the {@code x} term
-     * @param c the constant term
-     */
-   private void graphVertex(Fraction a, Fraction b, Fraction c) {
-       XYChart.Series<Number, Number> vertexSeries = new XYChart.Series<>();
+    private void drawVertex() {
 
-       double vx = -b.doubleValue() / (2 * a.doubleValue());
-       double vy = a.doubleValue()*vx*vx
-               + b.doubleValue()*vx
-               + c.doubleValue();
+        double vertexX = -b.doubleValue() / (2 * a.doubleValue());
 
-       vertexSeries.getData().add(new XYChart.Data<>(vx, vy));
+        double vertexY = calculateY(vertexX);
 
-       lineChart.getData().add(vertexSeries);
-   }
-
-    /**
-     * Zooms the specified axis by the given zoom factor while keeping the
-     * current center of the axis fixed.
-     *
-     * @param axis the axis to zoom
-     * @param factor the zoom factor; values greater than {@code 1} zoom in,
-     *               while values less than {@code 1} zoom out
-     */
-    private void zoomAxis(NumberAxis axis, double factor) {
-
-        double lower = axis.getLowerBound();
-        double upper = axis.getUpperBound();
-
-        double center = (lower + upper) / 2;
-        double halfRange = (upper - lower) / 2;
-
-        halfRange /= factor;
-
-        axis.setLowerBound(center - halfRange);
-        axis.setUpperBound(center + halfRange);
+        drawPoint(vertexX, vertexY);
     }
 
-    /**
-     * Pans the x-axis by the specified number of pixels.
-     *
-     * <p>The pixel distance is converted to graph units based on the
-     * current width of the graph.</p>
-     *
-     * @param pixelDelta the horizontal mouse movement in pixels
-     */
-    private void panXAxis(double pixelDelta) {
+    private void drawAOS() {
+        double aos = QuadraticSolver.getAxisOfSymmetry(a, b).doubleValue();
 
-        double range = xAxis.getUpperBound() - xAxis.getLowerBound();
+        if (xMin <= aos && xMax >= aos) {
 
-        double graphDelta = pixelDelta / lineChart.getWidth() * range;
+            double screenX = toScreenX(aos);
 
-        xAxis.setLowerBound(xAxis.getLowerBound() - graphDelta);
-        xAxis.setUpperBound(xAxis.getUpperBound() - graphDelta);
+            graphicsContext.strokeLine(
+                    screenX,
+                    canvas.getHeight(),
+                    screenX,
+                    10
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX - 5,
+                    20
+            );
+
+            graphicsContext.strokeLine(
+                    screenX,
+                    10,
+                    screenX + 5,
+                    20
+            );
+        }
     }
 
-    /**
-     * Pans the y-axis by the specified number of pixels.
-     *
-     * <p>The pixel distance is converted to graph units based on the
-     * current height of the graph.</p>
-     *
-     * @param pixelDelta the vertical mouse movement in pixels
-     */
-    private void panYAxis(double pixelDelta) {
+    private void drawPlottedPoints() {
+        for(int i = 0; i < xVals.size(); i++) {
+            drawPoint(xVals.get(i), yVals.get(i));
+        }
+    }
 
-        double range = yAxis.getUpperBound() - yAxis.getLowerBound();
+    private void drawPoint(double x, double y) {
 
-        double graphDelta = pixelDelta / lineChart.getWidth() * range;
+        double screenX = toScreenX(x);
+        double screenY = toScreenY(y);
 
-        yAxis.setLowerBound(yAxis.getLowerBound() - graphDelta);
-        yAxis.setUpperBound(yAxis.getUpperBound() - graphDelta);
+        double radius = 5;
+
+        graphicsContext.fillOval(
+                screenX - radius,
+                screenY - radius,
+                radius * 2,
+                radius * 2
+        );
+    }
+
+    private double calculateY(double x) {
+        return a.doubleValue() * x * x
+                + b.doubleValue() * x
+                + c.doubleValue();
+    }
+
+    private double toScreenX(double x) {
+        return (x - xMin) / (xMax - xMin) * canvas.getWidth();
+    }
+
+    private double toScreenY(double y) {
+        return canvas.getHeight() - (y - yMin) / (yMax - yMin) * canvas.getHeight();
+    }
+
+    private double toMathX(double screenX) {
+        return xMin + screenX / canvas.getWidth() * (xMax - xMin);
+    }
+
+    private double toMathY(double screenY) {
+        return yMin + (canvas.getHeight() - screenY) / canvas.getHeight() * (yMax - yMin);
+    }
+
+    private void setupMouseHandlers() {
+
+        canvas.setOnScroll(event -> {
+
+            double mouseX = toMathX(event.getX());
+
+            double mouseY = toMathY(event.getY());
+
+            double zoomFactor;
+
+            if (event.getDeltaY() > 0) {
+                zoomFactor = 0.9;
+            } else {
+                zoomFactor = 1.1;
+            }
+
+            zoom(mouseX, mouseY, zoomFactor);
+
+            event.consume();
+        });
+
+        canvas.setOnMousePressed(event -> {
+
+            if (event.getButton() == MouseButton.PRIMARY) {
+
+                lastMouseX = event.getX();
+                lastMouseY = event.getY();
+            }
+        });
+
+        canvas.setOnMouseDragged(event -> {
+
+            if (event.getButton() == MouseButton.PRIMARY) {
+
+                double dx = event.getX() - lastMouseX;
+
+                double dy = event.getY() - lastMouseY;
+
+                pan(dx, dy);
+
+                lastMouseX = event.getX();
+                lastMouseY = event.getY();
+            }
+        });
+    }
+
+    private void zoom(double centerX, double centerY, double factor) {
+
+        xMin = centerX + (xMin - centerX) * factor;
+
+        xMax = centerX + (xMax - centerX) * factor;
+
+        yMin = centerY + (yMin - centerY) * factor;
+
+        yMax = centerY + (yMax - centerY) * factor;
+
+        draw();
+    }
+
+    private void pan(double dx, double dy) {
+
+        double xUnitsPerPixel = (xMax - xMin) / canvas.getWidth();
+
+        double yUnitsPerPixel = (yMax - yMin) / canvas.getHeight();
+
+        double xShift = dx * xUnitsPerPixel;
+
+        double yShift = dy * yUnitsPerPixel;
+
+        xMin -= xShift;
+        xMax -= xShift;
+
+        yMin += yShift;
+        yMax += yShift;
+
+        draw();
+    }
+
+    public void panToPoint(double x, double y) {
+
+        double xRange = xMax - xMin;
+        double yRange = yMax - yMin;
+
+        xMin = x - xRange / 2;
+        xMax = x + xRange / 2;
+
+        yMin = y - yRange / 2;
+        yMax = y + yRange / 2;
+
+        draw();
+    }
+
+    private double calculateGridSpacing() {
+
+        double range = xMax - xMin;
+
+        double rawSpacing = range / 10;
+
+        double magnitude = Math.pow(10, Math.floor(Math.log10(rawSpacing)));
+
+        double normalized = rawSpacing / magnitude;
+
+        if (normalized < 2) {
+            return 1 * magnitude;
+        } else if (normalized < 5) {
+            return 2 * magnitude;
+        } else {
+            return 5 * magnitude;
+        }
     }
 }
+

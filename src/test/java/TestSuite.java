@@ -237,4 +237,215 @@ public class TestSuite {
             assertEquals("1/5x² - 0.25x + 0.5", result);
         }
     }
+
+    @Nested
+    @DisplayName("factoredForm Tests")
+    class factoredFormTests {
+        @Test
+        @DisplayName("Distinct integer roots")
+        void testDistinctIntegerRoots() {
+            assertEquals(
+                    "(x - 3)(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-5),
+                            Fraction.getFraction(6))
+            );
+        }
+
+        @Test
+        @DisplayName("Repeated integer roots")
+        void testRepeatedRoot() {
+            assertEquals(
+                    "(x - 2)(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-4),
+                            Fraction.getFraction(4))
+            );
+        }
+
+        @Test
+        @DisplayName("One zero root")
+        void testOneRootZero() {
+            assertEquals(
+                    "x(x - 2)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.getFraction(-2),
+                            Fraction.ZERO)
+            );
+        }
+
+        @Test
+        @DisplayName("Two zero roots")
+        void testBothRootsZero() {
+            assertEquals(
+                    "x²",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.ZERO)
+            );
+        }
+
+        @Test
+        @DisplayName("Two fraction roots")
+        void testFractionRoots() {
+            assertEquals(
+                    "(x - 1)(6x - 1)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction(6),
+                            Fraction.getFraction(-7),
+                            Fraction.ONE)
+            );
+        }
+
+        @Test
+        @DisplayName("Negative leading coefficient")
+        void testNegativeLeadingCoefficient() {
+            assertEquals(
+                    "-(x - 2)(x - 3)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction(-1),
+                            Fraction.getFraction(5),
+                            Fraction.getFraction(-6))
+            );
+        }
+
+        @Test
+        @DisplayName("Fraction gcf and negative roots")
+        void testFractionGCFAndNegativeRoots() {
+            assertEquals(
+                    "1/2(x + 1)(x + 4)",
+                    QuadraticSolver.factoredForm(
+                            Fraction.getFraction("1/2"),
+                            Fraction.getFraction("5/2"),
+                            Fraction.getFraction(2))
+            );
+        }
+
+        @Test
+        @DisplayName("Complex roots")
+        void testComplexRoots() {
+            assertEquals(
+                    "",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.ONE)
+            );
+        }
+
+        @Test
+        @DisplayName("Irrational roots")
+        void testIrrationalRoots() {
+            assertEquals(
+                    "",
+                    QuadraticSolver.factoredForm(
+                            Fraction.ONE,
+                            Fraction.ZERO,
+                            Fraction.getFraction(-2))
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("getVertex Tests")
+    class getVertexTests {
+        @Test
+        @DisplayName("Vertex with integer coordinates")
+        void testVertex_IntegerCoordinates() {
+            QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
+                    Fraction.ONE,
+                    Fraction.getFraction(-4),
+                    Fraction.getFraction(3));
+
+            assertEquals(Fraction.getFraction(2), vertex.x());
+            assertEquals(Fraction.getFraction(-1), vertex.y());
+        }
+
+        @Test
+        @DisplayName("Vertex with fraction coordinates")
+        void testVertex_FractionCoordinates() {
+            QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
+                    Fraction.getFraction(2),
+                    Fraction.getFraction(3),
+                    Fraction.getFraction(-5));
+
+            assertEquals(Fraction.getFraction(-3, 4), vertex.x());
+            assertEquals(Fraction.getFraction(-49, 8), vertex.y());
+        }
+
+        @Test
+        @DisplayName("Negative A coefficient")
+        void testVertex_NegativeLeadingCoefficient() {
+            QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
+                    Fraction.getFraction(-1),
+                    Fraction.getFraction(2),
+                    Fraction.getFraction(3));
+
+            assertEquals(Fraction.ONE, vertex.x());
+            assertEquals(Fraction.getFraction(4), vertex.y());
+        }
+
+        @Test
+        @DisplayName("Vertex on Y Axis")
+        void testVertex_OnYAxis() {
+            QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
+                    Fraction.ONE,
+                    Fraction.ZERO,
+                    Fraction.getFraction(-5));
+
+            assertEquals(Fraction.ZERO, vertex.x());
+            assertEquals(Fraction.getFraction(-5), vertex.y());
+        }
+    }
+
+    @Nested
+    @DisplayName("getAxisOfSymmetry Tests")
+    class getAxisOfSymmetryTests {
+        @Test
+        @DisplayName("Integer axis of symmetry")
+        void testAxisOfSymmetry_Integer() {
+            Fraction axis = QuadraticSolver.getAxisOfSymmetry(
+                    Fraction.ONE,
+                    Fraction.getFraction(-4));
+
+            assertEquals(Fraction.getFraction(2), axis);
+        }
+
+        @Test
+        @DisplayName("Fraction axis of symmetry")
+        void testAxisOfSymmetry_Fraction() {
+            Fraction axis = QuadraticSolver.getAxisOfSymmetry(
+                    Fraction.getFraction(2),
+                    Fraction.getFraction(3));
+
+            assertEquals(Fraction.getFraction(-3, 4), axis);
+        }
+
+        @Test
+        @DisplayName("Negative A coefficient")
+        void testAxisOfSymmetry_NegativeLeadingCoefficient() {
+            Fraction axis = QuadraticSolver.getAxisOfSymmetry(
+                    Fraction.getFraction(-1),
+                    Fraction.getFraction(2));
+
+            assertEquals(Fraction.ONE, axis);
+        }
+
+        @Test
+        @DisplayName("Axis matches vertex x-value")
+        void testAxisMatchesVertexX() {
+            Fraction a = Fraction.getFraction(5);
+            Fraction b = Fraction.getFraction(-10);
+            Fraction c = Fraction.getFraction(8);
+
+            Fraction axis = QuadraticSolver.getAxisOfSymmetry(a, b);
+            QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(a, b, c);
+
+            assertEquals(axis, vertex.x());
+        }
+    }
 }
