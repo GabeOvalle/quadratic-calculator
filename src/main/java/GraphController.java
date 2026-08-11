@@ -214,6 +214,10 @@ public class GraphController {
         yMax = Math.max(vertexY + 10, 10);
 
         draw();
+
+        if(vertexX <= 10 || vertexX >= 10 || vertexY <= 10 || vertexY >= 10) {
+            panToPoint(vertexX, vertexY);
+        }
     }
 
     private void draw() {
@@ -270,11 +274,13 @@ public class GraphController {
 
     private void drawGrid() {
 
-        double gridSpacing = calculateGridSpacing();
+        double xGridSpacing = calculateGridSpacing(xMin, xMax);
+        double yGridSpacing = calculateGridSpacing(yMin, yMax);
 
-        double firstX = Math.floor(xMin / gridSpacing) * gridSpacing;
+        double firstX =
+                Math.floor(xMin / xGridSpacing) * xGridSpacing;
 
-        for (double x = firstX; x <= xMax; x += gridSpacing) {
+        for (double x = firstX; x <= xMax; x += xGridSpacing) {
 
             double screenX = toScreenX(x);
 
@@ -286,9 +292,10 @@ public class GraphController {
             );
         }
 
-        double firstY = Math.floor(yMin / gridSpacing) * gridSpacing;
+        double firstY =
+                Math.floor(yMin / yGridSpacing) * yGridSpacing;
 
-        for (double y = firstY; y <= yMax; y += gridSpacing) {
+        for (double y = firstY; y <= yMax; y += yGridSpacing) {
 
             double screenY = toScreenY(y);
 
@@ -382,7 +389,7 @@ public class GraphController {
 
         double axisY = toScreenY(0);
 
-        double gridSpacing = calculateGridSpacing();
+        double gridSpacing = calculateGridSpacing(xMin, xMax);
 
         double firstLabel = Math.ceil(xMin / gridSpacing) * gridSpacing;
 
@@ -406,7 +413,7 @@ public class GraphController {
 
         double axisX = toScreenX(0);
 
-        double gridSpacing = calculateGridSpacing();
+        double gridSpacing = calculateGridSpacing(yMin, yMax);
 
         double firstLabel = Math.ceil(yMin / gridSpacing) * gridSpacing;
 
@@ -430,7 +437,7 @@ public class GraphController {
 
         double axisY = toScreenY(0);
 
-        double spacing = calculateGridSpacing();
+        double spacing = calculateGridSpacing(xMin, xMax);
 
         double firstTick = Math.ceil(xMin / spacing) * spacing;
 
@@ -455,7 +462,7 @@ public class GraphController {
 
         double axisX = toScreenX(0);
 
-        double spacing = calculateGridSpacing();
+        double spacing = calculateGridSpacing(yMin, yMax);
 
         double firstTick = Math.ceil(yMin / spacing) * spacing;
 
@@ -709,18 +716,19 @@ public class GraphController {
         draw();
     }
 
-    private double calculateGridSpacing() {
+    private double calculateGridSpacing(double min, double max) {
 
-        double range = xMax - xMin;
+        double range = max - min;
 
         double rawSpacing = range / 10;
 
-        double magnitude = Math.pow(10, Math.floor(Math.log10(rawSpacing)));
+        double magnitude =
+                Math.pow(10, Math.floor(Math.log10(rawSpacing)));
 
         double normalized = rawSpacing / magnitude;
 
         if (normalized < 2) {
-            return 1 * magnitude;
+            return magnitude;
         } else if (normalized < 5) {
             return 2 * magnitude;
         } else {
