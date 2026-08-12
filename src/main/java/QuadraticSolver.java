@@ -35,7 +35,7 @@ public class QuadraticSolver {
      */
     public record DecimalRepresentations(Double root1, Double root2) {}
 
-    public record Vertex(Fraction x, Fraction y) {}
+    public record Vertex(BigFraction x, BigFraction y) {}
 
     /**
      * Computes the roots of a quadratic equation of the form
@@ -288,10 +288,6 @@ public class QuadraticSolver {
      */
     public static String factoredForm(Fraction a, Fraction b, Fraction c) {
 
-        if(!isSafe(a, b, c)) {
-            return "";
-        }
-
         QuadraticRoots roots = getSolutions(a, b, c);
 
         if(roots.root1().contains("i") || roots.root1().contains("√") || roots.root2().contains("i") || roots.root2().contains("√")) {
@@ -342,11 +338,11 @@ public class QuadraticSolver {
         return factored.toString();
     }
 
-    public static Vertex getVertex(Fraction a, Fraction b, Fraction c) {
-        Fraction xVertex = b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
+    public static Vertex getVertex(BigFraction a, BigFraction b, BigFraction c) {
+        BigFraction xVertex = b.negate().divide(a.multiply(BigFraction.TWO));
 
-        Fraction yVertex = a.multiplyBy(xVertex.multiplyBy(xVertex))
-                        .add(b.multiplyBy(xVertex))
+        BigFraction yVertex = a.multiply(xVertex.multiply(xVertex))
+                        .add(b.multiply(xVertex))
                         .add(c);
 
         return new Vertex(xVertex, yVertex);
@@ -447,7 +443,7 @@ public class QuadraticSolver {
         BigDecimal b = new BigDecimal(bVal.doubleValue());
         BigDecimal c = new BigDecimal(cVal.doubleValue());
 
-        MathContext mc = new MathContext(6, RoundingMode.HALF_UP);
+        MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
 
         BigDecimal discriminant = b.multiply(b).subtract(new BigDecimal(4).multiply(a).multiply(c));
 

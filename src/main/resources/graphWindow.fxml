@@ -6,19 +6,23 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GraphController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GraphController">
    <children>
-      <Canvas fx:id="canvas" height="400.0" width="586.0" />
-      <Label fx:id="equationLabel" layoutX="29.0" layoutY="421.0" text="y =" textFill="RED" visible="false" />
-      <Label layoutX="195.0" layoutY="421.0" text="x = " visible="false" fx:id="xLabel" />
-      <TextField layoutX="218.0" layoutY="417.0" onAction="#plotPoint" prefHeight="25.0" prefWidth="100.0" visible="false" fx:id="xValue" />
-      <Label fx:id="yLabel" layoutX="341.0" layoutY="421.0" text="y = " visible="false" />
-      <TextField fx:id="yValue" editable="false" layoutX="362.0" layoutY="417.0" prefHeight="25.0" prefWidth="100.0" visible="false" />
-      <Button fx:id="resetButton" layoutX="644.0" layoutY="417.0" mnemonicParsing="false" onAction="#resetGraph" text="Reset" visible="false" />
-      <ListView fx:id="pointsList" layoutX="600.0" prefHeight="234.0" prefWidth="134.0" visible="false" />
-      <Button fx:id="undoButton" layoutX="644.0" layoutY="242.0" mnemonicParsing="false" onAction="#undoLastPoint" text="Undo" visible="false" />
-      <Button fx:id="clearPointsButton" layoutX="628.0" layoutY="275.0" mnemonicParsing="false" onAction="#clearPoints" text="Clear Points" visible="false" />
-      <Button fx:id="toggleAOSButton" layoutX="488.0" layoutY="417.0" mnemonicParsing="false" onAction="#toggleAOS" text="Show Axis of Symmetry" visible="false" />
+      <Canvas fx:id="canvas" height="400.0" layoutY="34.0" width="586.0" />
+      <Label fx:id="equationLabel" layoutX="195.0" layoutY="4.0" text="y =" textFill="RED" visible="false">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="468.0" text="x = " visible="false" fx:id="xLabel" />
+      <TextField layoutX="34.0" layoutY="464.0" onAction="#plotPoint" prefHeight="25.0" prefWidth="100.0" visible="false" fx:id="xValue" />
+      <Label fx:id="yLabel" layoutX="145.0" layoutY="468.0" text="y = " visible="false" />
+      <TextField fx:id="yValue" editable="false" layoutX="166.0" layoutY="464.0" prefHeight="25.0" prefWidth="100.0" visible="false" />
+      <Button fx:id="resetButton" layoutX="644.0" layoutY="464.0" mnemonicParsing="false" onAction="#resetGraph" text="Reset" visible="false" />
+      <ListView fx:id="pointsList" layoutX="600.0" layoutY="34.0" prefHeight="234.0" prefWidth="134.0" visible="false" />
+      <Button fx:id="undoButton" layoutX="644.0" layoutY="275.0" mnemonicParsing="false" onAction="#undoLastPoint" text="Undo" visible="false" />
+      <Button fx:id="clearPointsButton" layoutX="627.0" layoutY="312.0" mnemonicParsing="false" onAction="#clearPoints" text="Clear Points" visible="false" />
+      <Button fx:id="toggleAOSButton" layoutX="446.0" layoutY="464.0" mnemonicParsing="false" onAction="#toggleAOS" text="Show Axis of Symmetry" visible="false" />
    </children>
 </Pane>

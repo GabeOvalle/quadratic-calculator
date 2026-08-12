@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.apache.commons.math3.fraction.BigFraction;
 
 /**
  * Controller for the Quadratic Calculator user interface.
@@ -275,7 +276,10 @@ public class CalculatorController {
         info.append(factoredForm);
         info.append("\n\n");
 
-        QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(a, b, c);
+        QuadraticSolver.Vertex vert = QuadraticSolver.getVertex(new BigFraction(a.getNumerator(), b.getDenominator()),
+                                                                new BigFraction(b.getNumerator(), b.getDenominator()),
+                                                                new BigFraction(c.getNumerator(), c.getDenominator())
+                                                                );
         String vertex = "Vertex: (" + vert.x() + ", " + vert.y() + ")";
         info.append(vertex);
         if(Math.floor(vert.x().doubleValue()) != vert.x().doubleValue()
