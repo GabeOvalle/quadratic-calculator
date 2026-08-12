@@ -1,3 +1,9 @@
+import org.apache.commons.math3.fraction.BigFraction;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 /**
  * Utility class for solving quadratic equations of the form
  * ax² + bx + c = 0.
@@ -59,6 +65,10 @@ public class QuadraticSolver {
 
         if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
+        }
+
+        if(!isSafe(a, b, c)) {
+            return safeRootsCalculation(a, b, c);
         }
 
         QuadraticRoots roots;
@@ -128,6 +138,10 @@ public class QuadraticSolver {
 
         if(a.doubleValue() == 0.0) {
             throw new ArithmeticException();
+        }
+
+        if(!isSafe(a, b, c)) {
+            return new DecimalRepresentations(null, null);
         }
 
         DecimalRepresentations roots;
@@ -273,6 +287,11 @@ public class QuadraticSolver {
      *         numbers
      */
     public static String factoredForm(Fraction a, Fraction b, Fraction c) {
+
+        if(!isSafe(a, b, c)) {
+            return "";
+        }
+
         QuadraticRoots roots = getSolutions(a, b, c);
 
         if(roots.root1().contains("i") || roots.root1().contains("√") || roots.root2().contains("i") || roots.root2().contains("√")) {
@@ -326,8 +345,7 @@ public class QuadraticSolver {
     public static Vertex getVertex(Fraction a, Fraction b, Fraction c) {
         Fraction xVertex = b.negate().divideBy(a.multiplyBy(Fraction.getFraction(2)));
 
-        Fraction yVertex =
-                a.multiplyBy(xVertex.multiplyBy(xVertex))
+        Fraction yVertex = a.multiplyBy(xVertex.multiplyBy(xVertex))
                         .add(b.multiplyBy(xVertex))
                         .add(c);
 
@@ -411,5 +429,43 @@ public class QuadraticSolver {
 
         return (numerator*numerator == fraction.getNumerator())
                 && (denominator*denominator == fraction.getDenominator());
+    }
+
+    private static boolean isSafe(Fraction a, Fraction b, Fraction c) {
+        try {
+            Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
+
+            return true;
+        } catch (ArithmeticException e) {
+            return false;
+        }
+    }
+
+    private static QuadraticRoots safeRootsCalculation(Fraction aVal, Fraction bVal, Fraction cVal) {
+
+        BigDecimal a = new BigDecimal(aVal.doubleValue());
+        BigDecimal b = new BigDecimal(bVal.doubleValue());
+        BigDecimal c = new BigDecimal(cVal.doubleValue());
+
+        MathContext mc = new MathContext(6, RoundingMode.HALF_UP);
+
+        BigDecimal discriminant = b.multiply(b).subtract(new BigDecimal(4).multiply(a).multiply(c));
+
+        if(discriminant.compareTo(BigDecimal.ZERO) < 0) {
+            String firstPart = b.equals(BigDecimal.ZERO) ? "" : b.negate().divide(BigDecimal.TWO.multiply(a), mc).toString();
+            BigDecimal divide = discriminant.abs().sqrt(mc).divide(BigDecimal.TWO.multiply(a), mc);
+            String secondPart = divide.equals(BigDecimal.ONE) ? "" :
+                                divide.toString();
+
+            return new QuadraticRoots(
+                    firstPart + " + " + secondPart + "i",
+                    firstPart + " - " + secondPart + "i"
+            );
+        }
+
+        BigDecimal root1 = b.negate().add(discriminant.sqrt(mc)).divide(BigDecimal.TWO.multiply(a), mc);
+        BigDecimal root2 = b.negate().subtract(discriminant.sqrt(mc)).divide(BigDecimal.TWO.multiply(a), mc);
+
+        return new QuadraticRoots(root1.toString(), root2.toString());
     }
 }
