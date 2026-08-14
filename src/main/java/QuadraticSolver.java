@@ -290,7 +290,10 @@ public class QuadraticSolver {
 
         QuadraticRoots roots = getSolutions(a, b, c);
 
-        if(roots.root1().contains("i") || roots.root1().contains("√") || roots.root2().contains("i") || roots.root2().contains("√")) {
+        if(roots.root1().contains("i") || roots.root1().contains("√") ||
+                roots.root2().contains("i") || roots.root2().contains("√") ||
+                roots.root1().contains(".") || roots.root2().contains(".")
+        ) {
             return "";
         }
 
