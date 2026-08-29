@@ -67,7 +67,7 @@ public class QuadraticSolver {
             throw new ArithmeticException();
         }
 
-        if(!isSafe(a, b, c)) {
+        if(isNotSafe(a, b, c)) {
             return safeRootsCalculation(a, b, c);
         }
 
@@ -140,7 +140,7 @@ public class QuadraticSolver {
             throw new ArithmeticException();
         }
 
-        if(!isSafe(a, b, c)) {
+        if(isNotSafe(a, b, c)) {
             return new DecimalRepresentations(null, null);
         }
 
@@ -430,13 +430,13 @@ public class QuadraticSolver {
                 && (denominator*denominator == fraction.getDenominator());
     }
 
-    private static boolean isSafe(Fraction a, Fraction b, Fraction c) {
+    private static boolean isNotSafe(Fraction a, Fraction b, Fraction c) {
         try {
             Fraction discriminant = b.multiplyBy(b).subtract(Fraction.getFraction(4.0).multiplyBy(a).multiplyBy(c));
 
-            return true;
-        } catch (ArithmeticException e) {
             return false;
+        } catch (ArithmeticException e) {
+            return true;
         }
     }
 
