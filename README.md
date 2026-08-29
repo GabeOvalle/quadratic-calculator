@@ -39,5 +39,6 @@
 - Improved error handling for arithmetic overflows.
 - Added additional unit tests for quadratic equation functionality.
 
-## Limitations
-Extremely large or small coefficients may result in arithmetic overflow. The calculator is designed primarily for typical integer, decimal, and fractional quadratic equations.
+## 8/28/2026 Release
+- Improved handling of equations with larger coefficients.
+- Coefficients that don't cause overflow errors initially but cause overflow errors during calculation are handled using BigDecimal.

@@ -1,3 +1,4 @@
+import org.apache.commons.math3.fraction.BigFraction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -117,8 +118,8 @@ public class TestSuite {
                     Fraction.getFraction(-13,1),
                     Fraction.getFraction(6, 1)
             );
-            assertEquals(1.5, answers.root1(), 0.0001);
-            assertEquals(0.66666666, answers.root2(), 0.0001);
+            assertEquals(1.5, answers.root1());
+            assertEquals(0.6666666666666666, answers.root2());
         }
 
         @Test
@@ -357,48 +358,48 @@ public class TestSuite {
         @DisplayName("Vertex with integer coordinates")
         void testVertex_IntegerCoordinates() {
             QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
-                    Fraction.ONE,
-                    Fraction.getFraction(-4),
-                    Fraction.getFraction(3));
+                    BigFraction.ONE,
+                    new BigFraction(-4),
+                    new BigFraction(3));
 
-            assertEquals(Fraction.getFraction(2), vertex.x());
-            assertEquals(Fraction.getFraction(-1), vertex.y());
+            assertEquals(BigFraction.TWO, vertex.x());
+            assertEquals(BigFraction.MINUS_ONE, vertex.y());
         }
 
         @Test
         @DisplayName("Vertex with fraction coordinates")
         void testVertex_FractionCoordinates() {
             QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
-                    Fraction.getFraction(2),
-                    Fraction.getFraction(3),
-                    Fraction.getFraction(-5));
+                    BigFraction.TWO,
+                    new BigFraction(3),
+                    new BigFraction(-5));
 
-            assertEquals(Fraction.getFraction(-3, 4), vertex.x());
-            assertEquals(Fraction.getFraction(-49, 8), vertex.y());
+            assertEquals(new BigFraction(-3, 4), vertex.x());
+            assertEquals(new BigFraction(-49, 8), vertex.y());
         }
 
         @Test
         @DisplayName("Negative A coefficient")
         void testVertex_NegativeLeadingCoefficient() {
             QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
-                    Fraction.getFraction(-1),
-                    Fraction.getFraction(2),
-                    Fraction.getFraction(3));
+                    BigFraction.MINUS_ONE,
+                    BigFraction.TWO,
+                    new BigFraction(3));
 
-            assertEquals(Fraction.ONE, vertex.x());
-            assertEquals(Fraction.getFraction(4), vertex.y());
+            assertEquals(BigFraction.ONE, vertex.x());
+            assertEquals(new BigFraction(4), vertex.y());
         }
 
         @Test
         @DisplayName("Vertex on Y Axis")
         void testVertex_OnYAxis() {
             QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(
-                    Fraction.ONE,
-                    Fraction.ZERO,
-                    Fraction.getFraction(-5));
+                    BigFraction.ONE,
+                    BigFraction.ZERO,
+                    new BigFraction(-5));
 
-            assertEquals(Fraction.ZERO, vertex.x());
-            assertEquals(Fraction.getFraction(-5), vertex.y());
+            assertEquals(BigFraction.ZERO, vertex.x());
+            assertEquals(new BigFraction(-5), vertex.y());
         }
     }
 
@@ -438,14 +439,17 @@ public class TestSuite {
         @Test
         @DisplayName("Axis matches vertex x-value")
         void testAxisMatchesVertexX() {
-            Fraction a = Fraction.getFraction(5);
-            Fraction b = Fraction.getFraction(-10);
-            Fraction c = Fraction.getFraction(8);
+            BigFraction a = new BigFraction(5);
+            BigFraction b = new BigFraction(-10);
+            BigFraction c = new BigFraction(8);
 
-            Fraction axis = QuadraticSolver.getAxisOfSymmetry(a, b);
+            Fraction axis = QuadraticSolver.getAxisOfSymmetry(
+                    Fraction.getFraction(a.getNumeratorAsInt(), a.getDenominatorAsInt()),
+                    Fraction.getFraction(b.getNumeratorAsInt(), b.getDenominatorAsInt())
+            );
             QuadraticSolver.Vertex vertex = QuadraticSolver.getVertex(a, b, c);
 
-            assertEquals(axis, vertex.x());
+            assertEquals(new BigFraction(axis.getNumerator(), axis.getDenominator()), vertex.x());
         }
     }
 }
